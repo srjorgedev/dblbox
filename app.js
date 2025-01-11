@@ -3,7 +3,7 @@ import characterRoutes from "./src/routes/character.routes.js";
 import rateLimit from "express-rate-limit";
 
 const app = express();
-const PORT = 2323;
+// const PORT = 2323;
 
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000, 
