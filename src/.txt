@@ -1,0 +1,57 @@
+{
+    "_id": "DBL78-04S",
+    "num_id": 655,
+    "name": "Tamagami n.º 3",
+    "color": "[3]",
+    "type": "[2]",
+    "chapter": "[21]",
+    "tags": "[36,41]",
+    "rarity": "[3]",
+    "is_lf": false,
+    "transformable": false,
+    "tag_switch": false,
+    "revival": false,
+    "has_zenkai": false,
+    "abilities": {
+      "z": "[\"Defensa física y de energía básicas +22% para etiqueta DAIMA\",\"Defensa física y de energía básicas +26% para etiquetas DAIMA o Portador de Arma\",\"Defensa física y de energía básicas +30% para etiquetas DAIMA o Portador de Arma, y Ataque de energía básico +15% para etiqueta DAIMA\",\"Defensa física y de energía básicas +35% para etiquetas DAIMA o Portador de Arma, y Ataque de energía básico +18% para etiqueta DAIMA\"]",
+      "_id": 655,
+      "main": "[[\"Tamagami del tercer Reino de los Demonios\",\"Destrucción de todas las cartas propias y roba la carta de destreza definitiva Choque de Martillo\\n25% de recuperación de salud propia y Ki propio +50\\nCancela degradaciones de habilidad y estados alterados propios\\nInfunde los siguientes efectos propios según el número de cartas de destrezas destruido:\\n\\nCero cartas: Daño definitivo infligido +40% (15 s) y Probabilidad de crítico +40% (15 s)\\nUna carta: Daño definitivo infligido +30% (15 s) y Probabilidad de crítico +30% (15 s)\\nDos cartas: Daño definitivo infligido +20% (15 s) y Probabilidad de crítico +20% (15 s)\\n\\nCondición: Tras 25 s\"]]",
+      "ultra": null,
+      "ability_1": "[[\"Lucha ardiente en el tercer Reino de los Demonios\",\"Infunde los siguientes efectos al comienzo de la lucha:\\n\\n· Daño infligido propio +110% (inamovible)\\n· Daño físico infligido propio +30% (inamovible)\\n· Daño recibido propio -70% (inamovible)\\n· Daño contundente y cortante recibido propio -10% (inamovible)\\n· Daño infligido +30% para aliados de etiquetas DAIMA o Portador de Arma (inamovible)\\n\\nInfunde los siguientes efectos al entrar en la lucha:\\n\\n· Robo de una carta al azar si tienes tres cartas o menos\\n· Ki -30 para el enemigo\\n· Destrucción de una carta del enemigo al azar\\n· Sella las destrezas singulares del enemigo\\nLas destrezas selladas no pueden ser ejecutadas durante un tiempo (5 s)\\n· Sella la Cadena Devastadora del enemigo (5 s)\\n· Infunde a todos los enemigos Bloqueo de habilidad principal (5 s)\\n· Infunde a todos los enemigos Velocidad de robo de cartas de destrezas -1 (10 s) como degradación de habilidad\\n\\nInfunde los siguientes efectos si el enemigo cambia de luchador cuando estás en la lucha:\\n\\n· Robo de una carta al azar si tienes tres cartas o menos\\n· 5% de recuperación de salud propia y Ki propio +10\\n· Daño infligido propio +10% (inamovible) (siete veces)\\n· Coste de todas las destrezas propias -1 (inamovible) (siete veces)\\n· Tiempo de espera -2 s para aliados\\n\\nTe agrega una esfera del dragón cuando caes abatido\\n\\nCancela refuerzos de estado del enemigo cuando este ejecuta destrezas especiales, definitivas o despertar mientras estés vivo, si hay en formación 1 o más luchadores de etiquetas DAIMA o Portador de Arma (sin contarte) (tres veces)\"]]",
+      "ability_2": "[[\"Guerrero protector de las esferas del dragón del Reino de los Demonios\",\"El enemigo sale despedido lejos si ejecutas un Cambio Protector contra una destreza física (se puede activar durante la acción de apoyo)\\n\\nPOSIBLE ENLAZAR CON ATAQUES DE:\\n· Destrezas especiales\\n\\nInfunde los siguientes efectos propios cada vez que robas cartas de destrezas físicas o especiales cuando estás en la lucha:\\n\\n· 3% de recuperación de salud y Ki +20\\n· Medidor de evanescencia +15%\\n· Daño infligido +15% (10 s)\\n\\nInfunde los siguientes efectos cuando recibes un ataque de destreza del enemigo si tienes 50% o menos de salud restante cuando estás en la lucha:\\n\\n· Destrucción de una carta propia al azar y roba carta de destreza singular (una vez)\\n· 30% de recuperación de salud propia (tres veces)\\n· Cancela degradaciones de habilidad propias\\n· Ki -50 para el enemigo (una vez)\\n· Infunde a todos los enemigos Coste de todas las destrezas +5 (10 s) como degradación de habilidad\\n· Infunde a todos los enemigos Tiempo de espera +2 s (siete veces)\\n\\nInfunde los siguientes efectos propios cuando tienes 3 o más esferas del dragón mientras estés vivo (una vez):\\n\\n· Daño infligido +70% (inamovible)\\n· Velocidad de regeneración de ki +70% (inamovible)\\n· Velocidad de robo de cartas de destrezas +1 (inamovible)\\n· Anula la desventaja de afinidad del daño recibido (inamovible)\\n· Infunde refuerzo de estado que anula el efecto de Restar esferas del dragón del enemigo (50 s) (inamovible)\\n\\nInfunde los siguientes efectos cuando un aliado ejecuta una Cadena Devastadora (una vez):\\n\\n· Te agrega dos esferas del dragón\\n* Infunde este efecto incluso cuando caes abatido\\n· Probabilidad de crítico +15% para aliados (inamovible)\\n* Infunde este efecto incluso cuando caes abatido\\n· Infunde a todos los enemigos Cantidad de recuperación de salud recibida -50% (50 s) como degradación de habilidad\\n* Infunde este efecto incluso cuando caes abatido\"]]",
+      "z_limited": null,
+      "created_at": "2025-01-10T03:47:59.631821+00:00"
+    },
+    "zenkai_abilities": {
+      "_id": 655,
+      "main": null,
+      "ability_1": null,
+      "ability_2": null,
+      "ability_3": null,
+      "ability_4": null,
+      "created_at": "2025-01-10T03:48:00.067335+00:00",
+      "zenkai_ability": null
+    },
+    "arts": {
+      "_id": 655,
+      "blast": "[[\"Energía\",\"Energía (contundente)\"]]",
+      "awaken": null,
+      "strike": "[[\"Física (sello de destrezas especiales)\",\"Física (contundente)\\nSella las destrezas especiales del enemigo al acertar \\nLas destrezas selladas no pueden ser ejecutadas durante un tiempo (5 s) \\n* Escudo contra energía mientras cargas hacia delante\"]]",
+      "ultimate": "[[\"Choque de Martillo\",\"Inflige daño explosivo extremo al enemigo\\nInfunde los siguientes efectos propios al ejecutar:\\n\\n· Destrucción de todas las cartas y robo de cuatro cartas al azar\\n· Daño definitivo infligido +50% (3 s)\\n\\nInfunde al enemigo los siguientes efectos al acertar:\\n\\n· Destrucción de todas las cartas\\n· Infunde Cantidad de recuperación de salud recibida -50% (15 s) como degradación de habilidad\\n· Infunde Velocidad de robo de cartas de destrezas -1 (15 s) como degradación de habilidad\\n\\n* Escudo contra energía mientras cargas hacia delante\"]]",
+      "created_at": "2025-01-10T03:47:59.774527+00:00",
+      "special_art": "[[\"Esencia del Guardián\",\"Destrucción de tres cartas propias al azar y robo de tres cartas al azar\\n10% de recuperación de salud propia y Ki propio +50\\nDaño infligido propio +30% (10 s)\\nInfunde refuerzo de estado propio que anula la acción especial del enemigo durante su Cambio Protector (10 s)\\nDestrucción de una carta de destreza singular del enemigo\"]]",
+      "special_move": "[[\"Martillo Ascendente\",\"Inflige daño contundente extremo al enemigo\\nInfunde los siguientes efectos propios al ejecutar:\\n\\n· Daño especial infligido +30% (3 s)\\n· Destrucción de todas las cartas y robo de cuatro cartas al azar\\n· Infunde Tiempo de espera -5 s (15 s) como refuerzo de habilidad (suma de efecto prohibida)\\n\\nInfunde los siguientes efectos al acertar:\\n\\n· Anula la desventaja de afinidad propia (15 s)\\n· Obliga al enemigo a cambiar de luchador\\n\\n* Escudo contra energía mientras cargas hacia delante\"]]"
+    },
+    "zenkai_arts": {
+      "_id": 655,
+      "blast": "[[\"Energía\",\"Energía (contundente)\"]]",
+      "awaken": null,
+      "strike": "[[\"Física (sello de destrezas especiales)\",\"Física (contundente)\\nSella las destrezas especiales del enemigo al acertar \\nLas destrezas selladas no pueden ser ejecutadas durante un tiempo (5 s) \\n* Escudo contra energía mientras cargas hacia delante\"]]",
+      "ultimate": null,
+      "created_at": "2025-01-10T03:47:59.932237+00:00",
+      "special_art": null,
+      "special_move": null
+    },
+    "created_at": "2025-01-10T03:47:59.448968+00:00",
+    "pictures": null
+  }
