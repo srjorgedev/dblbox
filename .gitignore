@@ -1,2 +1,3 @@
 src/get
 src/routes/getCharacter.routes.js
+node_modules/
