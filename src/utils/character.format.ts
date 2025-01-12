@@ -1,19 +1,37 @@
-import { getColor, getChapter, getTag, getRarity, getType } from "../services/data.services";
-import { RawCharacter } from "../types/character.raw.js";
-import { Data } from "../types/data.js";
+import { RawCharacter, RawSummary } from "../types/character.raw.js";
+import { Data, DataArray } from "../types/data.js";
 import { FormatedCharacter } from "../types/formated.character";
 
-export async function basicFormat(character: RawCharacter) {
-    const { abilities, zenkai_abilities, arts, zenkai_arts } = character;
+export function summaryFormat(character: RawSummary, data: DataArray) {
+    const { tag, type, chapter, color, rarity } = data
 
-    let tag: Data[] = [], chapter: Data[] = [], color: Data[] = [], rarity: Data[] = [], type: Data[] = [];
-    if (!(tag.length > 0) || !(chapter.length > 0) || !(color.length > 0) || !(rarity.length > 0) || !(type.length > 0)) {
-        tag = await getTag()
-        chapter = await getChapter()
-        color = await getColor()
-        rarity = await getRarity()
-        type = await getType()
+    const match = {
+        Tag: getMatchingID(JSON.parse(character.tags), tag),
+        Chapter: getMatchingID(parseInt((character.chapter).replace(/[^\d]/g, '')), chapter),
+        Color: getMatchingID(JSON.parse(character.color), color),
+        Rarity: getMatchingID(parseInt((character.rarity).replace(/[^\d]/g, '')), rarity),
+        Type: getMatchingID(parseInt((character.type).replace(/[^\d]/g, '')), type),
     }
+
+    return {
+        _id: character._id,
+        num: character.num_id,
+        name: character.name,
+        color: match.Color,
+        type: match.Type,
+        chapter: match.Chapter,
+        rarity: match.Rarity,
+        tags: match.Tag,
+        lf: character.is_lf,
+        transformable: character.transformable,
+        switch: character.tag_switch,
+        zenkai: character.has_zenkai,
+    }
+}
+
+export function basicFormat(character: RawCharacter, data: DataArray) {
+    const { tag, type, chapter, color, rarity } = data
+    const { abilities, zenkai_abilities, arts, zenkai_arts } = character;
 
     const match = {
         Tag: getMatchingID(JSON.parse(character.tags), tag),

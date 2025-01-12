@@ -20,6 +20,22 @@ export interface RawCharacter {
     pictures: null;
 }
 
+export interface RawSummary {
+    _id: string;
+    num_id: number;
+    name: string;
+    color: string;
+    type: string;
+    chapter: string;
+    tags: string;
+    rarity: string;
+    is_lf: boolean;
+    transformable: boolean;
+    tag_switch: boolean;
+    revival: boolean;
+    has_zenkai: boolean;
+}
+
 export interface Abilities {
     z: string;
     _id: number;
