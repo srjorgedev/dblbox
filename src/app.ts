@@ -1,6 +1,7 @@
 import express, { Request, Response, Application } from "express";
 import characterRoutes from "./routes/character.routes";
 import rateLimit from "express-rate-limit";
+import cors from 'cors'
 
 const app: Application = express();
 const PORT = process.env.PORT ?? 2323;
@@ -15,6 +16,7 @@ const limiter = rateLimit({
     legacyHeaders: false,
 });
 
+app.use(cors())
 app.use(limiter);
 
 app.get("/helloworld", (_: Request, res: Response) => {
