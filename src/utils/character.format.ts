@@ -1,9 +1,12 @@
-import { getColor, getChapter, getTag, getRarity, getType } from "../services/data.services.js";
+import { getColor, getChapter, getTag, getRarity, getType } from "../services/data.services";
+import { RawCharacter } from "../types/character.raw.js";
+import { Data } from "../types/data.js";
+import { FormatedCharacter } from "../types/formated.character";
 
-export async function basicFormat(character) {
+export async function basicFormat(character: RawCharacter) {
     const { abilities, zenkai_abilities, arts, zenkai_arts } = character;
 
-    let tag = [], chapter = [], color = [], rarity = [], type = [];
+    let tag: Data[] = [], chapter: Data[] = [], color: Data[] = [], rarity: Data[] = [], type: Data[] = [];
     if (!(tag.length > 0) || !(chapter.length > 0) || !(color.length > 0) || !(rarity.length > 0) || !(type.length > 0)) {
         tag = await getTag()
         chapter = await getChapter()
@@ -20,7 +23,7 @@ export async function basicFormat(character) {
         Type: getMatchingID(parseInt((character.type).replace(/[^\d]/g, '')), type),
     }
 
-    return {
+    const Format = {
         _id: character._id,
         num: character.num_id,
         name: character.name,
@@ -39,7 +42,7 @@ export async function basicFormat(character) {
             ultra: abilities.ultra ? JSON.parse(abilities.ultra) : null,
             unique1: abilities.ability_1 ? JSON.parse(abilities.ability_1) : null,
             unique2: abilities.ability_2 ? JSON.parse(abilities.ability_2) : null,
-            limitedZ: abilities.limited_z ? JSON.parse(abilities.limited_z) : null,
+            limitedZ: abilities.z_limited ? JSON.parse(abilities.z_limited) : null,
         },
         zenkaiAbilities: character.has_zenkai && {
             main: JSON.parse(zenkai_abilities.main),
@@ -65,10 +68,12 @@ export async function basicFormat(character) {
             ultimate: JSON.parse(zenkai_arts.ultimate),
             awaken: zenkai_arts.awaken ? JSON.parse(zenkai_arts.awaken) : null,
         } || null
-    }
+    } satisfies FormatedCharacter
+
+    return Format
 }
 
-function getMatchingID(match, from) {
+function getMatchingID(match: number | [], from: Data[]) {
     if (Array.isArray(match)) {
         return [...new Set(
             match
