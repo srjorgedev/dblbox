@@ -1,11 +1,11 @@
 import express, { Request, Response, Application } from "express";
-import characterRoutes from "./src/routes/character.routes";
+import characterRoutes from "./routes/character.routes";
 import rateLimit from "express-rate-limit";
 
 const app: Application = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT ?? 2323;
 
-app.set('trust proxy', true);
+app.set('trust proxy', 'loopback');
 
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
