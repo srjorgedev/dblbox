@@ -3,7 +3,7 @@ import characterRoutes from "./src/routes/character.routes";
 import rateLimit from "express-rate-limit";
 
 const app: Application = express();
-const PORT = process.env.PORT ?? 2323;
+const PORT = process.env.PORT;
 
 app.set('trust proxy', true);
 
