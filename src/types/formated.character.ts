@@ -11,6 +11,7 @@ export interface FormatedCharacter {
     transformable: boolean
     switch: boolean
     zenkai: boolean
+    fusion: boolean
     abilities: Abilities
     zenkaiAbilities: ZenkaiAbilities | null
     arts: Arts

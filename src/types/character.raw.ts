@@ -18,6 +18,7 @@ export interface RawCharacter {
     zenkai_arts: Arts;
     created_at: Date;
     pictures: null;
+    fusion: boolean;
 }
 
 export interface RawSummary {
@@ -34,6 +35,7 @@ export interface RawSummary {
     tag_switch: boolean;
     revival: boolean;
     has_zenkai: boolean;
+    fusion: boolean;
 }
 
 export interface Abilities {

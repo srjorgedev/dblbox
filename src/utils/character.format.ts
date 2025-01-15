@@ -26,6 +26,7 @@ export function summaryFormat(character: RawSummary, data: DataArray) {
         transformable: character.transformable,
         switch: character.tag_switch,
         zenkai: character.has_zenkai,
+        fusion: character.fusion
     }
 }
 
@@ -54,6 +55,7 @@ export function basicFormat(character: RawCharacter, data: DataArray) {
         transformable: character.transformable,
         switch: character.tag_switch,
         zenkai: character.has_zenkai,
+        fusion: character.fusion,
         abilities: {
             zAbility: JSON.parse(abilities.z),
             main: JSON.parse(abilities.main),

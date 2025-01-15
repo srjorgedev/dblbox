@@ -38,7 +38,7 @@ export async function byID(id: string): Promise<RawCharacter> {
 export async function summaryAll(): Promise<RawSummary[]> {
     const { data, error } = await Supabase
         .from('character_basic')
-        .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai')
+        .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
         .order('rarity', { ascending: false })
         .order('num_id', { ascending: false });
 
