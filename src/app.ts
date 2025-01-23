@@ -2,6 +2,7 @@ import express, { Request, Response, Application } from "express";
 import characterRoutes from "./routes/character.routes";
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
+import authRoutes from "./routes/auth.routes"
 
 const app: Application = express();
 const PORT = process.env.PORT ?? 2323;
@@ -23,6 +24,8 @@ app.use(limiter);
 app.get("/helloworld", (_: Request, res: Response) => {
     res.send("Hello World");
 });
+
+app.use("/api/v1/auth", authRoutes)
 
 app.use("/api/v1/characters", characterRoutes);
 
