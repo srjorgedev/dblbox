@@ -19,6 +19,7 @@ export async function logInController(req: Request, res: Response) {
             message: "Login successful",
             user: filteredUser,
             token: session?.access_token,
+            role: session?.user.role
         });
     } catch (error) {
         console.error("Error during login:", (error as Error).message);
