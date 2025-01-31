@@ -136,6 +136,8 @@ export function basicFormatV2(character: RawCharacter, data: DataArray) {
     const z_strike: string[][] = JSON.parse(zenkai_arts.strike);
     const z_blast: string[][] = JSON.parse(zenkai_arts.blast);
 
+    const ultra: string[][] = abilities.ultra ? JSON.parse(abilities.ultra) : null;
+
     const Format = {
         basic: {
             _id: character._id,
@@ -157,7 +159,7 @@ export function basicFormatV2(character: RawCharacter, data: DataArray) {
         abilities: {
             zAbility: JSON.parse(abilities.z),
             main: mapAbility(main),
-            ultra: abilities.ultra ? JSON.parse(abilities.ultra) : null,
+            ultra: abilities.ultra ? mapAbility(ultra) : null,
             unique1: mapAbility(unique1),
             unique2: mapAbility(unique2),
             limitedZ: abilities.z_limited ? JSON.parse(abilities.z_limited) : null,
