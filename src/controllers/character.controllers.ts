@@ -1,17 +1,18 @@
 import { Request, Response } from 'express';
 import { getCharacter } from "../services/character.get.services";
 import type { FormatedCharacter } from "../types/formated.character";
-import { basicFormat, summaryFormat } from "../utils/character.format";
+import { basicFormat, basicFormatV2, summaryFormat } from "../utils/character.format";
 import { getData } from "../utils/invoque.data";
 import { updateCharacter } from '../services/character.update.services';
 import type { Abilities, Arts, BasicUpdateData, ZenkaiArts, ZenkaiAbilities, UpdateCharacter } from '../types/update.character';
 import { validateObject } from '../utils/validateObject';
+import { FormatedCharacterV2 } from '../types/formated.character.v2';
 
 let cachedCharacters: unknown;
 let lastFetchTime: number;
 const CACHE_EXPIRATION_TIME: number = 60 * 60 * 1000;
 
-let cachedCharacter: FormatedCharacter;
+let cachedCharacter: FormatedCharacter | FormatedCharacterV2;
 let lastFetchTime2: number;
 const CACHE_EXPIRATION_TIME2: number = 60 * 60 * 1000;
 
@@ -48,6 +49,42 @@ export async function getSummary(_: Request, res: Response): Promise<Response> {
     return res.json(formatedCharacters);
 }
 
+export async function getByIdV2(req: Request<{ idNUM: string }>, res: Response): Promise<Response> {
+    const id = parseInt(req.params.idNUM);
+    if (isNaN(id)) {
+        return res.status(400).json({ error: "Invalid ID format" });
+    }
+
+    const currentTime: number = Date.now();
+    const data = await getData();
+
+    if (cachedCharacter && "basic" in cachedCharacter) {
+        if (cachedCharacter.basic.num === id && (currentTime - lastFetchTime2) < CACHE_EXPIRATION_TIME2) {
+            return res.json(cachedCharacter);
+        }
+    }
+
+    try {
+        const characters = await getCharacter.byNumID(id);
+        if (!characters) {
+            return res.status(404).json({ error: "Character not found" });
+        }
+
+        const formattedCharacter = basicFormatV2(characters, data);
+        cachedCharacter = formattedCharacter;
+        lastFetchTime2 = currentTime;
+
+        return res.json(formattedCharacter);
+    } catch (error) {
+        console.error("Error fetching character:", error);
+        return res.status(500).json({
+            error: "Internal Server Error",
+            message: (error as Error).message,
+        });
+    }
+}
+
+
 export async function getById(req: Request<{ idNUM: string }>, res: Response): Promise<Response> {
     const id = parseInt(req.params.idNUM);
 
@@ -55,8 +92,10 @@ export async function getById(req: Request<{ idNUM: string }>, res: Response): P
     const currentTime: number = Date.now();
     const data = await getData()
 
-    if (cachedCharacter && cachedCharacter.num == id && (currentTime - lastFetchTime2) < CACHE_EXPIRATION_TIME2) {
-        return res.json(cachedCharacter);
+    if (cachedCharacter && "num" in cachedCharacter) {
+        if (cachedCharacter.num === id && (currentTime - lastFetchTime) < CACHE_EXPIRATION_TIME) {
+            return res.json(cachedCharacter);
+        }
     }
 
     try {
@@ -200,7 +239,12 @@ export async function updateBasic(req: Request<{ idNUM: string }>, res: Response
 export const characterGetController = {
     getById,
     getSummary,
-    refreshSummary
+    refreshSummary,
+
+}
+
+export const characterGetControllerV2 = {
+    getByIdV2
 }
 
 export const characterUpdateController = {
