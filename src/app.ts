@@ -1,8 +1,10 @@
 import express, { Request, Response, Application } from "express";
-import characterRoutes from "./routes/character.routes";
+import characterGetRoutes from "./routes/character.get.routes";
+import characterUpdateRoutes from "./routes/character.update.routes";
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
 import authRoutes from "./routes/auth.routes"
+import { checkAuth } from "./middleware/checkAuth";
 
 const app: Application = express();
 const PORT = process.env.PORT ?? 2323;
@@ -17,7 +19,9 @@ const limiter = rateLimit({
     legacyHeaders: false,
 });
 
+app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
+
 app.use(cors())
 app.use(limiter);
 
@@ -27,7 +31,8 @@ app.get("/helloworld", (_: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRoutes)
 
-app.use("/api/v1/characters", characterRoutes);
+app.use("/api/v1/characters", characterGetRoutes);
+app.use("/api/v1/characters", checkAuth, characterUpdateRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

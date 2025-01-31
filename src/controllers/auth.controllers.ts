@@ -1,7 +1,7 @@
-import { logInService } from "../services/auth.services";
+import { logInService, signOutService, hasSessionService } from "../services/auth.services";
 import { Request, Response } from "express";
 
-export async function logInController(req: Request, res: Response) {
+export async function logInController(req: Request, res: Response): Promise<Response> {
     const { email, password } = req.body;
 
     if (!email || !password) {
@@ -28,4 +28,18 @@ export async function logInController(req: Request, res: Response) {
             error: (error as Error).message,
         });
     }
+}
+
+export async function signOutController(req: Request, res: Response): Promise<Response> {
+    try {
+        await signOutService();
+        return res.status(200).json({ message: "Logout successful" });
+    } catch (error) {
+        return res.status(500).json({ message: (error as Error).message });
+    }
+}
+
+export async function hasSessionController(req: Request, res: Response): Promise<Response> {
+    const isLogged = await hasSessionService();
+    return res.json({ isLogged });
 }
