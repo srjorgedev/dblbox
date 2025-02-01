@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
     allowedHeaders: ['Content-Type', 'Authorization'],
-    origin: 'https://www.dbl-box.com',
+    origin: ['https://www.dbl-box.com', 'https://dbl-box.com', 'http://localhost:4321']
 }))
 app.use(limiter);
 
