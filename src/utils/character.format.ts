@@ -131,7 +131,7 @@ export function basicFormatV2(character: RawCharacter, data: DataArray) {
 
     const z_specialArt: string[][] = JSON.parse(zenkai_arts.special_art);
     const z_specialMove: string[][] = JSON.parse(zenkai_arts.special_move);
-    const z_ultimate: string[][] = zenkai_arts.awaken ? JSON.parse(zenkai_arts.ultimate) : null;
+    const z_ultimate: string[][] = zenkai_arts.ultimate ? JSON.parse(zenkai_arts.ultimate) : null;
     const z_awaken: string[][] = zenkai_arts.awaken ? JSON.parse(zenkai_arts.awaken) : null;
     const z_strike: string[][] = JSON.parse(zenkai_arts.strike);
     const z_blast: string[][] = JSON.parse(zenkai_arts.blast);
