@@ -1,3 +1,4 @@
+import "dotenv/config"
 import express, { Request, Response, Application } from "express";
 import characterGetRoutes from "./routes/character.get.routes";
 import characterUpdateRoutes from "./routes/character.update.routes";
@@ -23,7 +24,10 @@ const limiter = rateLimit({
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors())
+app.use(cors({
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: 'https://www.dbl-box.com',
+}))
 app.use(limiter);
 
 app.get("/helloworld", (_: Request, res: Response) => {

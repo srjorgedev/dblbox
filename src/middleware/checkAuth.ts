@@ -1,14 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import { hasSessionService } from "../services/auth.services";
+import { Supabase } from "../database/supabase";
 
-export async function checkAuth(_: Request, res: Response, next: NextFunction) {
+export async function checkAuth(req: Request, res: Response, next: NextFunction) {
     try {
-        const session = await hasSessionService();
+        const token = req.headers.authorization?.split(" ")[1];
 
-        if (!session) {
+        if (!token) {
             return res.status(401).json({
                 error: 'unauthorized',
-                message: 'Your session has expired, or you may not logged in'
+                message: 'Missing authentication token',
+            });
+        }
+
+        const { data, error } = await Supabase.auth.getUser(token);
+
+        if (error || !data.user) {
+            return res.status(401).json({
+                error: 'unauthorized',
+                message: 'Invalid or expired token',
             });
         }
 
@@ -17,7 +26,7 @@ export async function checkAuth(_: Request, res: Response, next: NextFunction) {
         console.error('Authentication error:', error);
         return res.status(500).json({
             error: 'internal_error',
-            message: 'An error occurred during authentication'
+            message: 'An error occurred during authentication',
         });
     }
 }
