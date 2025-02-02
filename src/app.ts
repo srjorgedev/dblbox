@@ -3,6 +3,7 @@ import express, { Request, Response, Application } from "express";
 import characterGetRoutes from "./routes/character.get.routes";
 import characterUpdateRoutes from "./routes/character.update.routes";
 import characterGetRoutesV2 from "./routes/v2/character.get.routes";
+import dataRoutes from "./routes/data.get.routes"
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
 import authRoutes from "./routes/auth.routes"
@@ -39,6 +40,7 @@ app.use("/api/v1/auth", authRoutes)
 app.use("/api/v1/characters", characterGetRoutes);
 app.use("/api/v2/characters", characterGetRoutesV2);
 app.use("/api/v1/characters", checkAuth, characterUpdateRoutes);
+app.use("/api/v1/data/get/", dataRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
