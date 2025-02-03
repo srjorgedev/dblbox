@@ -64,6 +64,8 @@ async function summaryByRarity(rarity: number): Promise<RawSummary[]> {
         .from("character_basic")
         .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
         .like('rarity', `[${rarity}]`)
+        .order('is_lf', { ascending: false })
+        .order('num_id', { ascending: false });
 
     if (error) throw new Error(error.message);
 
