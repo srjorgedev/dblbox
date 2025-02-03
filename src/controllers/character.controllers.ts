@@ -49,6 +49,27 @@ export async function getSummary(_: Request, res: Response): Promise<Response> {
     return res.json(formatedCharacters);
 }
 
+export async function getSummaryByRarity(_: Request<{ rar: string }>, res: Response): Promise<Response> {
+    const { rar } = _.params
+    const data = await getData()
+
+    const characters = await getCharacter.summaryByRarity(parseInt(rar));
+
+    const formatedCharacters = characters.map((character) => summaryFormat(character, data))
+
+    return res.json(formatedCharacters);
+}
+
+export async function getSummaryByIsLL(_: Request, res: Response): Promise<Response> {
+    const data = await getData()
+
+    const characters = await getCharacter.summaryByIsLL();
+
+    const formatedCharacters = characters.map((character) => summaryFormat(character, data))
+
+    return res.json(formatedCharacters);
+}
+
 export async function getByIdV2(req: Request<{ idNUM: string }>, res: Response): Promise<Response> {
     const id = parseInt(req.params.idNUM);
     if (isNaN(id)) {
@@ -240,7 +261,8 @@ export const characterGetController = {
     getById,
     getSummary,
     refreshSummary,
-
+    getSummaryByIsLL,
+    getSummaryByRarity
 }
 
 export const characterGetControllerV2 = {

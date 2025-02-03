@@ -27,7 +27,14 @@ export function summaryFormat(character: RawSummary, data: DataArray) {
         transformable: character.transformable,
         switch: character.tag_switch,
         zenkai: character.has_zenkai,
-        fusion: character.fusion
+        fusion: character.fusion,
+        states:
+            (character.fusion && character.transformable ? 3 :
+                (character.fusion && character.revival ? 3 :
+                    (character.fusion && character.tag_switch ? 3 :
+                        (character.tag_switch ? 2 :
+                            (character.transformable ? 2 :
+                                (character.revival ? 2 : 1))))))
     }
 }
 

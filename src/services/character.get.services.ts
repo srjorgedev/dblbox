@@ -59,10 +59,34 @@ async function summaryByNumID(id: number): Promise<RawSummary> {
     return data[0]
 }
 
+async function summaryByRarity(rarity: number): Promise<RawSummary[]> {
+    const { data, error } = await Supabase
+        .from("character_basic")
+        .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
+        .like('type', `[${rarity}]`)
+
+    if (error) throw new Error(error.message);
+
+    return data
+}
+
+async function summaryByIsLL(): Promise<RawSummary[]> {
+    const { data, error } = await Supabase
+        .from("character_basic")
+        .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
+        .eq('is_lf', true)
+
+    if (error) throw new Error(error.message);
+
+    return data
+}
+
 export const getCharacter = {
     all,
     byNumID,
     byID,
     summaryAll,
-    summaryByNumID
+    summaryByNumID,
+    summaryByRarity,
+    summaryByIsLL
 }
