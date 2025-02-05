@@ -1,7 +1,7 @@
 import { RawCharacter, RawSummary } from "../types/character.raw.js";
 import { Data, DataArray } from "../types/data.js";
 import { FormatedCharacter } from "../types/formated.character";
-import { FormatedCharacterV2 } from "../types/formated.character.v2.js";
+import { FormatedCharacterV2, Name } from "../types/formated.character.v2.js";
 
 export function summaryFormat(character: RawSummary, data: DataArray) {
     const { tag, type, chapter, color, rarity } = data
@@ -14,10 +14,12 @@ export function summaryFormat(character: RawSummary, data: DataArray) {
         Type: getMatchingID(parseInt((character.type).replace(/[^\d]/g, '')), type),
     }
 
+    const name = getName(character.name)
+
     return {
         _id: character._id,
         num: character.num_id,
-        name: character.name,
+        name: name,
         color: match.Color,
         type: match.Type,
         chapter: match.Chapter,
@@ -107,6 +109,44 @@ function mapAbility(arr: string[][]): { title: string, desc: string }[] {
         .filter(Boolean);
 }
 
+function getName(name: string): string | Name {
+    const isJSON = typeof name
+
+    if (isJSON === "string") return name
+
+    const parsedName = JSON.parse(name)
+    const isArray = Array.isArray(parsedName)
+
+    if (!isArray) return parsedName
+    const states = parsedName.length
+
+    if (isArray && states === 4) {
+        return {
+            name1: parsedName[0],
+            name2: parsedName[1],
+            name3: parsedName[2],
+            title: parsedName[3]
+        }
+    }
+
+    if (isArray && states === 3) {
+        return {
+            name1: parsedName[0],
+            name2: parsedName[1],
+            title: parsedName[2]
+        }
+    }
+
+    if (isArray && states === 2) {
+        return {
+            name1: parsedName[0],
+            name2: parsedName[1],
+            title: parsedName[0]
+        }
+    }
+
+}
+
 export function basicFormatV2(character: RawCharacter, data: DataArray) {
     const { tag, type, chapter, color, rarity } = data
     const { abilities, zenkai_abilities, arts, zenkai_arts } = character;
@@ -118,6 +158,8 @@ export function basicFormatV2(character: RawCharacter, data: DataArray) {
         Rarity: getMatchingID(parseInt((character.rarity).replace(/[^\d]/g, '')), rarity),
         Type: getMatchingID(parseInt((character.type).replace(/[^\d]/g, '')), type),
     }
+
+    const name = getName(character.name)
 
     const unique1: string[][] = abilities.ability_1 ? JSON.parse(abilities.ability_1) : null;
     const unique2: string[][] = abilities.ability_2 ? JSON.parse(abilities.ability_2) : null;
@@ -149,7 +191,7 @@ export function basicFormatV2(character: RawCharacter, data: DataArray) {
         basic: {
             _id: character._id,
             num: character.num_id,
-            name: character.name,
+            name: name,
             color: match.Color,
             type: match.Type,
             chapter: match.Chapter,
