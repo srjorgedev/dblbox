@@ -110,43 +110,37 @@ function mapAbility(arr: string[][]): { title: string, desc: string }[] {
 }
 
 function getName(name: string): string | Name {
-    const isJSON = typeof name
-
-    if (isJSON === "string") return name
-
-    const parsedName = JSON.parse(name)
-    const isArray = Array.isArray(parsedName)
-
-    if (!isArray) return parsedName
-    const states = parsedName.length
-
-    if (isArray && states === 4) {
-        return {
-            name1: parsedName[0],
-            name2: parsedName[1],
-            name3: parsedName[2],
-            title: parsedName[3]
+    try {
+        const parsed = JSON.parse(name);
+        if (Array.isArray(parsed)) {
+            const length = parsed.length;
+            if (length === 4) {
+                return {
+                    name1: parsed[0],
+                    name2: parsed[1],
+                    name3: parsed[2],
+                    title: parsed[3]
+                };
+            } else if (length === 3) {
+                return {
+                    name1: parsed[0],
+                    name2: parsed[1],
+                    title: parsed[2]
+                };
+            } else if (length === 2) {
+                return {
+                    name1: parsed[0],
+                    name2: parsed[1],
+                    title: parsed[0]
+                };
+            }
         }
+        return name;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (e) {
+        return name;
     }
-
-    if (isArray && states === 3) {
-        return {
-            name1: parsedName[0],
-            name2: parsedName[1],
-            title: parsedName[2]
-        }
-    }
-
-    if (isArray && states === 2) {
-        return {
-            name1: parsedName[0],
-            name2: parsedName[1],
-            title: parsedName[0]
-        }
-    }
-
 }
-
 export function basicFormatV2(character: RawCharacter, data: DataArray) {
     const { tag, type, chapter, color, rarity } = data
     const { abilities, zenkai_abilities, arts, zenkai_arts } = character;
