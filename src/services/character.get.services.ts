@@ -77,11 +77,38 @@ async function summaryByIsLL(): Promise<RawSummary[]> {
         .from("character_basic")
         .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
         .eq('is_lf', true)
+        .order('num_id', { ascending: false });
 
     if (error) throw new Error(error.message);
 
     return data
 }
+
+async function summaryByZenkai(): Promise<RawSummary[]> {
+    const { data, error } = await Supabase
+        .from("character_basic")
+        .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
+        .eq('has_zenkai', true)
+        .order('num_id', { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    return data
+}
+
+async function summaryByLLZenkai(): Promise<RawSummary[]> {
+    const { data, error } = await Supabase
+        .from("character_basic")
+        .select('_id, num_id, name, color, type, chapter, tags, rarity, is_lf, transformable, tag_switch, revival, has_zenkai, fusion')
+        .eq('is_lf', true)
+        .eq('has_zenkai', true)
+        .order('num_id', { ascending: false });
+
+    if (error) throw new Error(error.message);
+
+    return data
+}
+
 
 export const getCharacter = {
     all,
@@ -90,5 +117,7 @@ export const getCharacter = {
     summaryAll,
     summaryByNumID,
     summaryByRarity,
-    summaryByIsLL
+    summaryByIsLL,
+    summaryByZenkai,
+    summaryByLLZenkai
 }

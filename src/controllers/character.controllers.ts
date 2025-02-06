@@ -70,6 +70,27 @@ export async function getSummaryByIsLL(_: Request, res: Response): Promise<Respo
     return res.json(formatedCharacters);
 }
 
+export async function getSummaryByZenkai(_: Request, res: Response): Promise<Response> {
+    const data = await getData()
+
+    const characters = await getCharacter.summaryByZenkai();
+
+    const formatedCharacters = characters.map((character) => summaryFormat(character, data))
+
+    return res.json(formatedCharacters);
+}
+
+export async function getSummaryByLLZenkai(_: Request, res: Response): Promise<Response> {
+    const data = await getData()
+
+    const characters = await getCharacter.summaryByLLZenkai();
+
+    const formatedCharacters = characters.map((character) => summaryFormat(character, data))
+
+    return res.json(formatedCharacters);
+}
+
+
 export async function getByIdV2(req: Request<{ idNUM: string }>, res: Response): Promise<Response> {
     const id = parseInt(req.params.idNUM);
     if (isNaN(id)) {
@@ -262,7 +283,9 @@ export const characterGetController = {
     getSummary,
     refreshSummary,
     getSummaryByIsLL,
-    getSummaryByRarity
+    getSummaryByRarity,
+    getSummaryByZenkai,
+    getSummaryByLLZenkai
 }
 
 export const characterGetControllerV2 = {

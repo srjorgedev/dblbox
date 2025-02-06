@@ -9,6 +9,8 @@ router.get("/get/:idNUM", characterGetController.getById);
 router.get("/get/summary/refresh", checkAuth, characterGetController.refreshSummary);
 router.get("/get/summary/rarity/:rar", characterGetController.getSummaryByRarity)
 router.get("/get/summary/ll", characterGetController.getSummaryByIsLL)
+router.get("/get/summary/zenkai", characterGetController.getSummaryByZenkai)
+router.get("/get/summary/ll-zenkai", characterGetController.getSummaryByLLZenkai)
 
 // router.post("/update/:idNUM", characterController.updateCharacter)
 
