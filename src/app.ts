@@ -6,8 +6,6 @@ import characterGetRoutesV2 from "./routes/v2/character.get.routes";
 import dataRoutes from "./routes/data.get.routes"
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
-import authRoutes from "./routes/auth.routes"
-import { checkAuth } from "./middleware/checkAuth";
 
 const app: Application = express();
 const PORT = process.env.PORT ?? 2323;
@@ -35,11 +33,9 @@ app.get("/helloworld", (_: Request, res: Response) => {
     res.send("Hello World");
 });
 
-app.use("/api/v1/auth", authRoutes)
-
 app.use("/api/v1/characters", characterGetRoutes);
 app.use("/api/v2/characters", characterGetRoutesV2);
-app.use("/api/v1/characters", checkAuth, characterUpdateRoutes);
+app.use("/api/v1/characters", characterUpdateRoutes);
 app.use("/api/v1/data/get/", dataRoutes)
 
 app.listen(PORT, () => {
