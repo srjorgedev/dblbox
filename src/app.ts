@@ -3,6 +3,7 @@ import express, { Request, Response, Application } from "express";
 import characterGetRoutes from "./routes/character.get.routes";
 import characterUpdateRoutes from "./routes/character.update.routes";
 import characterGetRoutesV2 from "./routes/v2/character.get.routes";
+import equipmentRoutes from "./routes/equipment.routes"
 import dataRoutes from "./routes/data.get.routes"
 import rateLimit from "express-rate-limit";
 import cors from 'cors'
@@ -36,6 +37,7 @@ app.get("/helloworld", (_: Request, res: Response) => {
 app.use("/api/v1/characters", characterGetRoutes);
 app.use("/api/v2/characters", characterGetRoutesV2);
 app.use("/api/v1/characters", characterUpdateRoutes);
+app.use("/api/v1/equipment", equipmentRoutes)
 app.use("/api/v1/data/get/", dataRoutes)
 
 app.listen(PORT, () => {
