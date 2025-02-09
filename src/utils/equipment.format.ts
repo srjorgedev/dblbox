@@ -71,28 +71,35 @@ function formatBuffs(slot: string): Record<string, Record<string, string>> {
 
     return formattedBuffs;
 }
-
-function extractValues(slot: string): Record<string, Record<string, { min: number, max: number }>> {
+function extractValues(slot: string): Record<
+    string,
+    { amount: number; values: Record<string, { min: number; max: number }> }
+> {
     const parsedSlot: string[][] = JSON.parse(slot);
-    const extractedValues: Record<string, Record<string, { min: number, max: number }>> = {};
+    const extractedValues: Record<
+        string,
+        { amount: number; values: Record<string, { min: number; max: number }> }
+    > = {};
 
     parsedSlot.forEach((option, index) => {
         const optionKey = `option_${index + 1}`;
-        extractedValues[optionKey] = {};
+        extractedValues[optionKey] = { amount: 0, values: {} };
 
         option.forEach((buff, buffIndex) => {
             const match = buff.match(/([-+]?[0-9]*\.?[0-9]+)\s*~\s*([-+]?[0-9]*\.?[0-9]+)/);
             if (match) {
-                extractedValues[optionKey][`${buffIndex + 1}`] = {
+                extractedValues[optionKey].values[`${buffIndex + 1}`] = {
                     min: parseFloat(match[1]),
-                    max: parseFloat(match[2])
+                    max: parseFloat(match[2]),
                 };
+                extractedValues[optionKey].amount++;
             }
         });
     });
 
     return extractedValues;
 }
+
 
 function extractTraits(traits: string[][][]): Record<string, string[]> {
     const extractedTraits: Record<string, string[]> = {};
