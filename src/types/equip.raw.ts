@@ -8,3 +8,9 @@ export interface RawEquipment {
     slot3: string
     slot4: null
 }
+
+export interface RawSummaryEquipment {
+    _id: number
+    rarity: number
+    traits: string
+}

@@ -29,7 +29,21 @@ async function getByID(id: number) {
     }
 }
 
+async function getSummaryAll() {
+    try {
+        const { data, error } = await Supabase
+            .from("equipments")
+            .select("_id, rarity(_id, es), traits")
+
+        if (error) throw new Error(error.message)
+        return data
+    } catch (error) {
+        return error
+    }
+}
+
 export const equipmentsGetServices = {
     getAll,
-    getByID
+    getByID,
+    getSummaryAll
 }

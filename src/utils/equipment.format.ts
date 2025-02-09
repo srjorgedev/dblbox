@@ -1,5 +1,14 @@
-import { RawEquipment } from "../types/equip.raw";
+import { RawEquipment, RawSummaryEquipment } from "../types/equip.raw";
 import { Data } from "../types/data";
+
+export function FormatSummaryEquip(equip: RawSummaryEquipment) {
+    return {
+        _id: equip._id,
+        unique_for: equip.rarity == 5 && equip.traits.includes("DBL"),
+        traits: extractTraits(JSON.parse(equip.traits)),
+        rarity: equip.rarity
+    };
+}
 
 export function FormatEquip(equip: RawEquipment, rarity: Data[]) {
     const match = {

@@ -1,8 +1,8 @@
 import { equipmentsGetServices } from "../services/equipments.get.services";
 import { Request, Response } from "express";
-import { RawEquipment } from "../types/equip.raw";
+import { RawEquipment, RawSummaryEquipment } from "../types/equip.raw";
 import { getEquipsRarity } from "../services/equip.data.services";
-import { FormatEquip } from "../utils/equipment.format";
+import { FormatEquip, FormatSummaryEquip } from "../utils/equipment.format";
 
 async function getAll(_: Request, res: Response): Promise<Response> {
     try {
@@ -30,7 +30,19 @@ async function getByID(_: Request<{ id: string }>, res: Response): Promise<Respo
     }
 }
 
+async function getSummaryAll(_: Request, res: Response): Promise<Response>  {
+    try {
+        const data = await equipmentsGetServices.getSummaryAll() as RawSummaryEquipment[]
+
+        const equips = data.map((eq) => FormatSummaryEquip(eq))
+        res.json(equips)
+    } catch (error) {
+        return res.json({ error: error, error_message: (error as Error).message })
+    }
+}
+
 export const equipmentControllers = {
     getAll,
-    getByID
+    getByID,
+    getSummaryAll
 }
