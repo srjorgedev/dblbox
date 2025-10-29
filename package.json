@@ -1,0 +1,38 @@
+{
+  "name": "dblboxts",
+  "version": "1.0.0",
+  "description": "DBL BOX REST API made in TypeScript. Recopiles DB Legends units, equipment information and more. ",
+  "main": "app.ts",
+  "type": "module",
+  "scripts": {
+    "app": "node app.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srjorgedev/dblbox.git"
+  },
+  "keywords": [
+    "dbl",
+    "dblbox",
+    "dbl-box",
+    "db",
+    "box",
+    "dragon",
+    "ball",
+    "legends",
+    "db",
+    "legends",
+    "dragon",
+    "ball"
+  ],
+  "author": "srjorgedev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/srjorgedev/dblbox/issues"
+  },
+  "homepage": "https://github.com/srjorgedev/dblbox#readme",
+  "dependencies": {
+    "@libsql/client": "^0.15.15"
+  }
+}
