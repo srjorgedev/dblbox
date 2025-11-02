@@ -13,7 +13,7 @@ export class LangRepo implements IRepository<Lang> {
         this.conn = conn;
     }
 
-    getAll(): Promise<ResultSet> {
+    readAll(): Promise<ResultSet> {
         return this.conn.execute("SELECT _code as Code, name as Name FROM lang")
     }
 
