@@ -1,5 +1,5 @@
 import type { Client, ResultSet } from "@libsql/client";
-import type IRepository from "./repo.interface.ts";
+import type IRepository from "./repo.interface";
 
 type Color = {
   id: number;

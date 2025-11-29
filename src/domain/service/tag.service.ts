@@ -1,5 +1,5 @@
-import { TagRepo } from "../repository/tag.repo.ts";
-import type { TSTag } from "../../models/tag.type.ts";
+import { TagRepo } from "../repository/tag.repo";
+import type { TSTag } from "../../models/tag.type";
 
 export class TagService {
     private readonly tagRepo: TagRepo;

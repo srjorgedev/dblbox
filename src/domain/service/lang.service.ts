@@ -1,5 +1,5 @@
-import { LangRepo } from "../repository/lang.repo.ts";
-import type { TSLang, TRLang } from "../../models/lang.type.ts";
+import { LangRepo } from "../repository/lang.repo";
+import type { TSLang, TRLang } from "../../models/lang.type";
 
 export class LangService {
     private readonly langRepo: LangRepo;

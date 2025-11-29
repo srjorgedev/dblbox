@@ -1,5 +1,5 @@
-import { TypeRepo } from "../repository/type.repo.ts";
-import type { TSType, TRType } from "../../models/type.type.ts";
+import { TypeRepo } from "../repository/type.repo";
+import type { TSType, TRType } from "../../models/type.type";
 
 export class TypeService {
     private readonly typeRepo: TypeRepo;

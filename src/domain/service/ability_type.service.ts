@@ -1,5 +1,5 @@
-import { AbilityTypeRepo } from "../repository/ability_type.repo.ts";
-import type { TSAbilityType } from "../../models/ability_type.type.ts";
+import { AbilityTypeRepo } from "../repository/ability_type.repo";
+import type { TSAbilityType } from "../../models/ability.type";
 
 export class AbilityTypeService {
     private readonly abilityTypeRepo: AbilityTypeRepo;
@@ -13,7 +13,7 @@ export class AbilityTypeService {
         const rows = data.rows;
 
         const results: TSAbilityType[] = rows.map(row => ({
-            id: Number(row["_id"]),         
+            id: Number(row["_id"]),
             content: String(row["content"])
         }));
 

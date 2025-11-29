@@ -1,5 +1,5 @@
-import { ColorRepo } from "../repository/color.repo.ts";
-import type { TSColor, TRColor } from "../../models/color.type.ts";
+import { ColorRepo } from "../repository/color.repo";
+import type { TSColor, TRColor } from "../../models/color.type";
 
 export class ColorService {
     private readonly colorRepo: ColorRepo;

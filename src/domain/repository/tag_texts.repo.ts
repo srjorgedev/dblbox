@@ -1,6 +1,6 @@
-import type IRepository from "./repo.interface.ts";
+import type IRepository from "./repo.interface";
 import type { Client, ResultSet } from "@libsql/client";
-import type { TRTagText } from "../../models/tag.type.ts";
+import type { TRTagText } from "../../models/tag.type";
 
 
 export class TagTextsRepo implements IRepository<TRTagText> {

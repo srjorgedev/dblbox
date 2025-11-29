@@ -1,7 +1,7 @@
 import type { Client, ResultSet } from "@libsql/client";
-import type IRepository from "./repo.interface.ts";
-import type { ILonely } from "./repo.interface.ts";
-import type { TRTag } from "../../models/tag.type.ts";
+import type IRepository from "./repo.interface";
+import type { ILonely } from "./repo.interface";
+import type { TRTag } from "../../models/tag.type";
 
 export class TagRepo implements IRepository<TRTag>, ILonely {
     private readonly conn: Client;

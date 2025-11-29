@@ -1,6 +1,6 @@
 import type { Client, ResultSet } from "@libsql/client";
-import type IRepository from "./repo.interface.ts";
-import type { TRAbilityType } from "../../models/ability_type.type.ts";
+import type IRepository from "./repo.interface";
+import type { TRAbilityType } from "../../models/ability.type";
 
 export class AbilityTypeRepo implements IRepository<TRAbilityType> {
     private readonly conn: Client;

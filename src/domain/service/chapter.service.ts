@@ -1,5 +1,5 @@
-import { ChapterRepo } from "../repository/chapter.repo.ts";
-import type { TSChapter } from "../../models/chapter.type.ts";
+import { ChapterRepo } from "../repository/chapter.repo";
+import type { TSChapter } from "../../models/chapter.type";
 
 export class ChapterService {
     private readonly chapterRepo: ChapterRepo;

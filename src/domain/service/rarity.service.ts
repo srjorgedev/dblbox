@@ -1,5 +1,5 @@
-import { RarityRepo } from "../repository/rarity.repo.ts";
-import type { TSRarity, TRRarity } from "../../models/rarity.type.ts";
+import { RarityRepo } from "../repository/rarity.repo";
+import type { TSRarity, TRRarity } from "../../models/rarity.type";
 
 export class RarityService {
     private readonly rarityRepo: RarityRepo;

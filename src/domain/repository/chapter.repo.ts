@@ -1,5 +1,5 @@
-import type IRepository from "./repo.interface.ts";
-import type { ILonely } from "./repo.interface.ts";
+import type IRepository from "./repo.interface";
+import type { ILonely } from "./repo.interface";
 import type { Client, ResultSet } from "@libsql/client";
 
 type Chapter = {
