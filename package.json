@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "description": "DBL BOX REST API made in TypeScript. Recopiles DB Legends units, equipment information and more. ",
   "main": "app.ts",
-  "type": "module",
   "scripts": {
-    "app": "tsx app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
     "dev": "tsx watch app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "cli": "tsx cli/app.ts",

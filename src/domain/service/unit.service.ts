@@ -57,82 +57,111 @@ export class UnitService {
     }
 
     async findAll(): Promise<any> {
-        const data = await this.unitRepo.readAll();
-        const units = data.rows.map(row => MapUnit(row))
-
-        return units;
+        try {
+            const data = await this.unitRepo.readAll();
+            const units = data.rows.map(row => MapUnit(row))
+            return units;
+        } catch (error) {
+            throw error;
+        }
     }
 
     async count(): Promise<number> {
-        const data = await this.unitRepo.readCount();
-        return Number(data.rows[0]["total"])
+        try {
+            const data = await this.unitRepo.readCount();
+            return Number(data.rows[0]["total"])
+        } catch (error) {
+            throw error;
+        }
     }
 
     async findAllWithPages(page: number, limit: number): Promise<TSUnit[]> {
-        const offset: number = (page - 1) * limit;
-        const data = await this.unitRepo.readAllWithPages(limit, offset);
+        try {
+            const offset: number = (page - 1) * limit;
+            const data = await this.unitRepo.readAllWithPages(limit, offset);
 
-        const units: TSUnit[] = data.rows.map(row => MapUnit(row))
+            const units: TSUnit[] = data.rows.map(row => MapUnit(row))
 
-        return units
+            return units
+        } catch (error) {
+            throw error;
+        }
     }
 
     async findAllSummariesWithPages(page: number, limit: number): Promise<TSUnit[]> {
-        const offset: number = (page - 1) * limit;
-        const data = await this.unitRepo.readAllWithPages(limit, offset);
+        try {
+            const offset: number = (page - 1) * limit;
+            const data = await this.unitRepo.readAllWithPages(limit, offset);
 
-        const units: TSUnit[] = data.rows.map(row => MapUnit(row))
+            const units: TSUnit[] = data.rows.map(row => MapUnit(row))
 
-        return units
+            return units
+        } catch (error) {
+            throw error;
+        }
     }
 
     async findByID(id: string): Promise<TSUnit> {
-        const data = await this.unitRepo.readByID(id);
-        const rows = data.rows[0]
+        try {
+            const data = await this.unitRepo.readByID(id);
+            if (data.rows.length === 0) {
+                throw new Error("Unit not found");
+            }
+            const rows = data.rows[0]
 
-        const names = MapData(JSON.parse(rows["unit_names"]!.toString()));
-        const rarity = MapData(JSON.parse(rows["rarity_texts"]!.toString()));
-        const type = MapData(JSON.parse(rows["type_texts"]!.toString()));
-        const chapter = MapData(JSON.parse(rows["chapter_texts"]!.toString()));
-        const colors = MapData(JSON.parse(rows["color_texts"]!.toString()));
+            const names = MapData(JSON.parse(rows["unit_names"]!.toString()));
+            const rarity = MapData(JSON.parse(rows["rarity_texts"]!.toString()));
+            const type = MapData(JSON.parse(rows["type_texts"]!.toString()));
+            const chapter = MapData(JSON.parse(rows["chapter_texts"]!.toString()));
+            const colors = MapData(JSON.parse(rows["color_texts"]!.toString()));
 
-        return {
-            id: String(rows["unit_id"]),
-            num: Number(rows["unit_num"]),
-            transform: Boolean(rows["transform"]),
-            lf: Boolean(rows["lf"]),
-            zenkai: Boolean(rows["zenkai"]),
-            tagswitch: Boolean(rows["tagswitch"]),
-            unit_names: names,
-            rarity: rarity[0],
-            type: type[0],
-            chapter: chapter[0],
-            colors: colors
+            return {
+                id: String(rows["unit_id"]),
+                num: Number(rows["unit_num"]),
+                transform: Boolean(rows["transform"]),
+                lf: Boolean(rows["lf"]),
+                zenkai: Boolean(rows["zenkai"]),
+                tagswitch: Boolean(rows["tagswitch"]),
+                unit_names: names,
+                rarity: rarity[0],
+                type: type[0],
+                chapter: chapter[0],
+                colors: colors
+            }
+        } catch (error) {
+            throw error;
         }
     }
 
     async findByNUM(num: number): Promise<TSUnit> {
-        const data = await this.unitRepo.readByNUM(num);
-        const rows = data.rows[0]
+        try {
+            const data = await this.unitRepo.readByNUM(num);
+            if (data.rows.length === 0) {
+                throw new Error("Unit not found");
+            }
+            const rows = data.rows[0]
 
-        const names = MapData(JSON.parse(rows["unit_names"]!.toString()));
-        const rarity = MapData(JSON.parse(rows["rarity_texts"]!.toString()));
-        const type = MapData(JSON.parse(rows["type_texts"]!.toString()));
-        const chapter = MapData(JSON.parse(rows["chapter_texts"]!.toString()));
-        const colors = MapData(JSON.parse(rows["color_texts"]!.toString()));
+            const names = MapData(JSON.parse(rows["unit_names"]!.toString()));
+            const rarity = MapData(JSON.parse(rows["rarity_texts"]!.toString()));
+            const type = MapData(JSON.parse(rows["type_texts"]!.toString()));
+            const chapter = MapData(JSON.parse(rows["chapter_texts"]!.toString()));
+            const colors = MapData(JSON.parse(rows["color_texts"]!.toString()));
 
-        return {
-            id: String(rows["unit_id"]),
-            num: Number(rows["unit_num"]),
-            transform: Boolean(rows["transform"]),
-            lf: Boolean(rows["lf"]),
-            zenkai: Boolean(rows["zenkai"]),
-            tagswitch: Boolean(rows["tagswitch"]),
-            unit_names: names,
-            rarity: rarity[0],
-            type: type[0],
-            chapter: chapter[0],
-            colors: colors
+            return {
+                id: String(rows["unit_id"]),
+                num: Number(rows["unit_num"]),
+                transform: Boolean(rows["transform"]),
+                lf: Boolean(rows["lf"]),
+                zenkai: Boolean(rows["zenkai"]),
+                tagswitch: Boolean(rows["tagswitch"]),
+                unit_names: names,
+                rarity: rarity[0],
+                type: type[0],
+                chapter: chapter[0],
+                colors: colors
+            }
+        } catch (error) {
+            throw error;
         }
     }
 }

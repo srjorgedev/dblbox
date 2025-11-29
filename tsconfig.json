@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-        "module": "ESNext",
-        "target": "ES2020",
+        "target": "ES2020", 
+        "module": "CommonJS", 
         "moduleResolution": "node",
-        "esModuleInterop": true,
-        "outDir": "dist"
+        "outDir": "dist", 
+        "rootDir": ".", 
+        "strict": false,
+        "esModuleInterop": true, 
+        "resolveJsonModule": true, 
+        "skipLibCheck": true 
     },
     "include": [
-        "cli/**/*",
-        "repo/**/*",
-        "service/**/*"
+        "app.ts",
+        "src/**/*"
     ]
 }

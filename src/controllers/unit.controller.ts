@@ -27,24 +27,14 @@ export class UnitController {
                 let targetPage: number = Number(page)
                 let targetLimit: number = Number(limit)
 
-                if (!targetPage || targetPage == 0) targetPage = 1;
-                if (!limit) throw new Error("Limit is required");
+                if (isNaN(targetPage)) targetPage = 0;
+                if (!limit || isNaN(targetLimit)) throw new Error("Limit is required and must be a number");
 
                 units = await this.unitService.findAllWithPages(targetPage, targetLimit)
-
-                const total = await this.unitService.count()
-                const totalPages = Math.ceil(total / targetLimit)
-                const hasNextPage = targetPage < totalPages
-                const hasPrevPage = targetPage > 1
-
                 pagination = {
                     page: targetPage,
                     limit: targetLimit,
-                    counOnPage: units.length,
-                    total: total,
-                    totalPages: totalPages,
-                    hasNextPage: hasNextPage,
-                    hasPrevPage: hasPrevPage
+                    total: units.length
                 }
             }
 
@@ -55,17 +45,21 @@ export class UnitController {
                 },
                 units
             })
-        } catch (error) {
-            const err = error as Error
-            log("[UNIT CONTROLLER]: Error -> " + err.stack)
-            res.status(500).json({
+        } catch (error: any) {
+            log("[UNIT CONTROLLER]: Error -> " + error.message);
+            if (error.message === "Limit is required and must be a number") {
+                 return res.status(400).json({
+                    metadata: {
+                        status: 400,
+                        error: error.message
+                    },
+                    units: []
+                })
+            }
+            return res.status(500).json({
                 metadata: {
                     status: 500,
-                    error: {
-                        message: err.message,
-                        name: err.name,
-                        cause: err.cause
-                    }
+                    error: "Internal Server Error"
                 },
                 units: []
             })
