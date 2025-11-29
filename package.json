@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "app": "tsx app.ts",
+    "dev": "tsx watch app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "cli": "tsx cli/app.ts",
     "scrapper": "tsx  src/scrapper/app.ts"
@@ -36,12 +37,14 @@
   "homepage": "https://github.com/srjorgedev/dblbox#readme",
   "dependencies": {
     "@libsql/client": "^0.15.15",
+    "@types/express": "^5.0.5",
     "axios": "^1.13.1",
     "cheerio": "^1.1.2",
+    "express": "^5.1.0",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

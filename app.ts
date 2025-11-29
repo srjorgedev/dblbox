@@ -15,7 +15,36 @@ import { UnitNameRepo } from "./src/domain/repository/name.repo";
 import { UnitRepo } from "./src/domain/repository/unit.repo";
 import { UnitService } from "./src/domain/service/unit.service";
 
-const sUnit = new UnitService(new UnitRepo(conn.conn))
-const unit = await sUnit.findByID("DBL87-03S")
+import { UnitController } from "./src/controllers/unit.controller";
 
-const units = await sUnit.findAllWithPages(1, 10)
+import express, { Application } from "express"
+
+import { createUnitRoutes } from "./src/routes/unit.routes";
+
+function main() {
+    // Express app declaration and config
+    const app: Application = express()
+    const port = process.env.PORT || 1120
+
+    // Database connection declaration
+    const Conn = conn.conn;
+
+    // Controllers, Repositories & Services declaration  
+    const cUnit = new UnitController(new UnitService(new UnitRepo(Conn)))
+
+    // Routes declaration
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: true }))
+
+    app.use("/api/unit", createUnitRoutes(cUnit))
+
+
+
+
+    // Running app
+    app.listen(port, ()=>{
+        console.log(`Server running on port ${port}`)
+    })
+}
+
+main()

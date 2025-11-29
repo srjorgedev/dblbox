@@ -1,6 +1,53 @@
 import { UnitRepo } from "../repository/unit.repo";
 import { MapData } from "../../utils/map";
 import type { TSUnit } from "../../models/unit.type";
+import type { Row } from "@libsql/client";
+
+type AllResult = {
+    data: TSUnit[],
+    totalCount: number
+}
+
+function MapUnit(row: Row) {
+    const names = MapData(row["unit_names"]!.toString().split(",").map(name => {
+        const [num, lang, content] = name.split("::");
+        return { id: Number(num), lang, name: content }
+    }))
+
+    const rarity = MapData(row["rarity_texts"]!.toString().split(",").map(name => {
+        const [num, lang, content] = name.split("::");
+        return { id: Number(num), lang, name: content }
+    }))
+
+    const type = MapData(row["type_texts"]!.toString().split(",").map(name => {
+        const [num, lang, content] = name.split("::");
+        return { id: Number(num), lang, name: content }
+    }))
+
+    const chapter = MapData(row["chapter_texts"]!.toString().split(",").map(name => {
+        const [num, lang, content] = name.split("::");
+        return { id: Number(num), lang, name: content }
+    }))
+
+    const colors = MapData(row["color_texts"]!.toString().split(",").map(name => {
+        const [id, num, lang, content] = name.split("::");
+        return { id: Number(id), number: Number(num), lang, name: content }
+    }))
+
+    return {
+        id: String(row["unit_id"]),
+        num: Number(row["unit_num"]),
+        transform: Boolean(row["transform"]),
+        lf: Boolean(row["lf"]),
+        zenkai: Boolean(row["zenkai"]),
+        tagswitch: Boolean(row["tagswitch"]),
+        unit_names: names,
+        rarity: rarity[0],
+        type: type[0],
+        chapter: chapter[0],
+        colors: colors
+    }
+}
 
 export class UnitService {
     private readonly unitRepo: UnitRepo;
@@ -11,52 +58,30 @@ export class UnitService {
 
     async findAll(): Promise<any> {
         const data = await this.unitRepo.readAll();
+        const units = data.rows.map(row => MapUnit(row))
+
+        return units;
+    }
+
+    async count(): Promise<number> {
+        const data = await this.unitRepo.readCount();
+        return Number(data.rows[0]["total"])
     }
 
     async findAllWithPages(page: number, limit: number): Promise<TSUnit[]> {
         const offset: number = (page - 1) * limit;
         const data = await this.unitRepo.readAllWithPages(limit, offset);
 
-        const units: TSUnit[] = data.rows.map(row => {
-            const names = MapData(row["unit_names"]!.toString().split(",").map(name => {
-                const [num, lang, content] = name.split("::");
-                return { id: Number(num), lang, name: content }
-            }))
+        const units: TSUnit[] = data.rows.map(row => MapUnit(row))
 
-            const rarity = MapData(row["rarity_texts"]!.toString().split(",").map(name => {
-                const [num, lang, content] = name.split("::");
-                return { id: Number(num), lang, name: content }
-            }))
+        return units
+    }
 
-            const type = MapData(row["type_texts"]!.toString().split(",").map(name => {
-                const [num, lang, content] = name.split("::");
-                return { id: Number(num), lang, name: content }
-            }))
+    async findAllSummariesWithPages(page: number, limit: number): Promise<TSUnit[]> {
+        const offset: number = (page - 1) * limit;
+        const data = await this.unitRepo.readAllWithPages(limit, offset);
 
-            const chapter = MapData(row["chapter_texts"]!.toString().split(",").map(name => {
-                const [num, lang, content] = name.split("::");
-                return { id: Number(num), lang, name: content }
-            }))
-
-            const colors = MapData(row["color_texts"]!.toString().split(",").map(name => {
-                const [id, num, lang, content] = name.split("::");
-                return { id: Number(id), number: Number(num), lang, name: content }
-            }))
-
-            return {
-                id: String(row["unit_id"]),
-                num: Number(row["unit_num"]),
-                transform: Boolean(row["transform"]),
-                lf: Boolean(row["lf"]),
-                zenkai: Boolean(row["zenkai"]),
-                tagswitch: Boolean(row["tagswitch"]),
-                unit_names: names,
-                rarity: rarity[0],
-                type: type[0],
-                chapter: chapter[0],
-                colors: colors
-            } as TSUnit
-        })
+        const units: TSUnit[] = data.rows.map(row => MapUnit(row))
 
         return units
     }
