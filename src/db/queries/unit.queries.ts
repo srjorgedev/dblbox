@@ -11,7 +11,7 @@ export const QUnits = {
                 GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
                 GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
                 GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-                GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::::' || ct.lang || '::' || ct.content) AS color_texts
+                GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts
             FROM unit u
                 LEFT JOIN unit_name un ON un.unit = u._id
                 LEFT JOIN rarity_texts r ON r.rarity = u.rarity
@@ -34,7 +34,7 @@ export const QUnits = {
                 GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
                 GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
                 GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-                GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::::' || ct.lang || '::' || ct.content) AS color_texts
+                GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts
             FROM unit u
                 LEFT JOIN unit_name un ON un.unit = u._id
                 LEFT JOIN rarity_texts r ON r.rarity = u.rarity
@@ -59,7 +59,7 @@ export const QUnits = {
                 GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
                 GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
                 GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-                GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::::' || ct.lang || '::' || ct.content) AS color_texts
+                GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts
             FROM unit u
                 LEFT JOIN unit_name un ON un.unit = u._id
                 LEFT JOIN rarity_texts r ON r.rarity = u.rarity

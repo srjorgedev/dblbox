@@ -1,4 +1,6 @@
-import { conn } from "./src/db/conn"
+import { Database } from "./src/db/conn"
+import "dotenv/config"
+
 import { LangRepo } from "./src/domain/repository/lang.repo"
 import { ColorRepo } from "./src/domain/repository/color.repo";
 import { TagRepo } from "./src/domain/repository/tag.repo";
@@ -20,14 +22,21 @@ import { UnitController } from "./src/controllers/unit.controller";
 import express, { Application } from "express"
 
 import { createUnitRoutes } from "./src/routes/unit.routes";
+import { log } from "./src/utils/log";
 
 function main() {
     // Express app declaration and config
     const app: Application = express()
     const port = process.env.PORT || 1120
 
+    // Database env
+    const url = process.env.TURSO_URL
+    const token = process.env.TURSO_TOKEN
+
+    log(`[MAIN]: url -> ${url}  token -> ${token}`)
+
     // Database connection declaration
-    const Conn = conn.conn;
+    const Conn = new Database(url, token).getConnection()
 
     // Controllers, Repositories & Services declaration  
     const cUnit = new UnitController(new UnitService(new UnitRepo(Conn)))

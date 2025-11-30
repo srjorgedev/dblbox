@@ -48,7 +48,7 @@ export class UnitController {
         } catch (error: any) {
             log("[UNIT CONTROLLER]: Error -> " + error.message);
             if (error.message === "Limit is required and must be a number") {
-                 return res.status(400).json({
+                return res.status(400).json({
                     metadata: {
                         status: 400,
                         error: error.message

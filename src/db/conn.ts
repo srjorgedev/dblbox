@@ -1,33 +1,20 @@
-import { createClient } from "@libsql/client"
-import type { Client, ResultSet } from "@libsql/client"
+import type { Client } from "@libsql/client";
+import { createClient } from "@libsql/client";
 
-// const conn = createClient({
-//     url: "file:C:\\Users\\Jorge Sandoval\\Documents\\db\\dblbox.sql",
-//     offline: true,
-// });
+export class Database {
+    private readonly Conn: Client;
 
-
-class Database {
-    public readonly conn: Client;
-
-    constructor() {
-        this.conn = createClient({
-            url: "file:C:\\Users\\Jorge Sandoval\\Documents\\db\\dblbox.db",
+    constructor(url?: string, token?: string) {
+        this.Conn = createClient({
+            url: url || "file:C:\\Users\\Jorge Sandoval\\Documents\\db\\dblbox.db",
+            authToken: token || ""
         });
     }
-    
-    // read(table: string, columns: string[]): Promise<ResultSet> {
-    //     const sql = `SELECT ${columns.join(", ")} FROM ${table};`;
-    //     return this.conn.execute({ sql });
-    // }
 
-    // write(table: string, data: Record<string, unknown>): Promise<ResultSet> {
-    //     const sql = `INSERT INTO ${table} (${Object.keys(data).join(", ")}) VALUES (${Object.values(data).map(value => `'${value}'`).join(", ")});`;
-    //     return this.conn.execute({ sql });
-    // }
+    getConnection() {
+        return this.Conn
+    }
 }
-
-export const conn = new Database()
 
 // interface IDB {
 //     read(): Promise<ResultSet>;
