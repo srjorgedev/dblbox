@@ -44,11 +44,9 @@ function main() {
     // Routes declaration
     app.use(express.json())
     app.use(express.urlencoded({ extended: true }))
+    // app.use()
 
     app.use("/api/unit", createUnitRoutes(cUnit))
-
-
-
 
     // Running app
     app.listen(port, ()=>{

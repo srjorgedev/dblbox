@@ -2,6 +2,7 @@ import { UnitRepo } from "../repository/unit.repo";
 import { MapData } from "../../utils/map";
 import type { TSUnit } from "../../models/unit.type";
 import type { Row } from "@libsql/client";
+import { getOrSetCache } from "../../utils/cache-wrapper";
 
 type AllResult = {
     data: TSUnit[],
@@ -58,9 +59,10 @@ export class UnitService {
 
     async findAll(): Promise<any> {
         try {
-            const data = await this.unitRepo.readAll();
-            const units = data.rows.map(row => MapUnit(row))
-            return units;
+            return await getOrSetCache("units:all", async () => {
+                const data = await this.unitRepo.readAll();
+                return data.rows.map(row => MapUnit(row));
+            }, 86400);
         } catch (error) {
             throw error;
         }
@@ -78,11 +80,12 @@ export class UnitService {
     async findAllWithPages(page: number, limit: number): Promise<TSUnit[]> {
         try {
             const offset: number = (page - 1) * limit;
-            const data = await this.unitRepo.readAllWithPages(limit, offset);
+            const cacheKey = `units:page:${page}:limit:${limit}`;
 
-            const units: TSUnit[] = data.rows.map(row => MapUnit(row))
-
-            return units
+            return await getOrSetCache(cacheKey, async () => {
+                const data = await this.unitRepo.readAllWithPages(limit, offset);
+                return data.rows.map(row => MapUnit(row));
+            }, 86400);
         } catch (error) {
             throw error;
         }
