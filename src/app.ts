@@ -29,7 +29,7 @@ async function app() {
     const server = e()
 
     server.use("/api/v1/unit", createUnitRoutes(unitController))
-    server.use("api/v1/assets", createAssetsRoutes(assetsController))
+    server.use("/api/v1/assets", createAssetsRoutes(assetsController))
 
     server.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`)
