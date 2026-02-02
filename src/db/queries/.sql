@@ -87,3 +87,10 @@ INSERT INTO ability_type_texts (ability_type, lang, content) VALUES
 (22, "es", "Zenkai Special Move"),
 (23, "es", "Zenkai Ultimate"),
 (24, "es", "Zenkai Awaken");
+
+INSERT INTO ability_type_texts (ability_type, lang, content) VALUES
+(1, "es", "Habilidad inicial"),
+(5, "es", "Cambio Protector singular"),
+(6, "es", "Medidor único"),
+(8, "es", "Contraataque automático");
+
