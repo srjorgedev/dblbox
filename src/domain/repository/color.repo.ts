@@ -11,8 +11,8 @@ export class ColorRepo {
         try {
             const query = `
                 SELECT 
-                    c._id,
-                    ct.content as color
+                    c._id as id,
+                    ct.content as name
                 FROM color c
                 JOIN color_texts ct ON c._id = ct.color
                 WHERE ct.lang = ?
@@ -31,8 +31,8 @@ export class ColorRepo {
         try {
             const query = `
                 SELECT 
-                    c._id,
-                    ct.content as color
+                    c._id as id,
+                    ct.content as name
                 FROM color c
                 JOIN color_texts ct ON c._id = ct.color
                 WHERE c._id = ? AND ct.lang = ?

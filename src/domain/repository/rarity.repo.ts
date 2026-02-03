@@ -11,8 +11,8 @@ export class RarityRepo {
         try {
             const query = `
                 SELECT 
-                    r._id,
-                    rt.content as rarity
+                    r._id as id,
+                    rt.content as name
                 FROM rarity r
                 JOIN rarity_texts rt ON r._id = rt.rarity
                 WHERE rt.lang = ?
@@ -31,8 +31,8 @@ export class RarityRepo {
         try {
             const query = `
                 SELECT 
-                    r._id,
-                    rt.content as rarity
+                    r._id as id,
+                    rt.content as name
                 FROM rarity r
                 JOIN rarity_texts rt ON r._id = rt.rarity
                 WHERE r._id = ? AND rt.lang = ?

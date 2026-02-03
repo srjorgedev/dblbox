@@ -18,8 +18,8 @@ export class TagRepo {
         try {
             const query = `
                 SELECT 
-                    t._id,
-                    tt.content as tag
+                    t._id as id,
+                    tt.content as name
                 FROM tag t
                 LEFT JOIN tag_texts tt ON t._id = tt.tag
                 WHERE tt.lang = ?

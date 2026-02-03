@@ -11,8 +11,8 @@ export class TypeRepo {
         try {
             const query = `
                 SELECT 
-                    t._id,
-                    tt.content as type
+                    t._id as id,
+                    tt.content as name
                 FROM type t
                 JOIN type_texts tt ON t._id = tt.type
                 WHERE tt.lang = ?
@@ -31,8 +31,8 @@ export class TypeRepo {
         try {
             const query = `
                 SELECT 
-                    t._id,
-                    tt.content as type
+                    t._id as id,
+                    tt.content as name
                 FROM type t
                 JOIN type_texts tt ON t._id = tt.type
                 WHERE t._id = ? AND tt.lang = ?

@@ -11,8 +11,8 @@ export class ChapterRepo {
         try {
             const query = `
                 SELECT 
-                    c._id,
-                    ct.content as chapter
+                    c._id as id,
+                    ct.content as name
                 FROM chapter c
                 JOIN chapter_texts ct ON c._id = ct.chapter
                 WHERE ct.lang = ?
@@ -31,8 +31,8 @@ export class ChapterRepo {
         try {
             const query = `
                 SELECT 
-                    c._id,
-                    ct.content as chapter
+                    c._id as id,
+                    ct.content as name
                 FROM chapter c
                 JOIN chapter_texts ct ON c._id = ct.chapter
                 WHERE c._id = ? AND ct.lang = ?
