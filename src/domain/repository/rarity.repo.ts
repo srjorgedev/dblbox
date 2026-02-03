@@ -1,0 +1,50 @@
+import { Client } from "@libsql/client";
+
+export class RarityRepo {
+    private readonly db: Client;
+
+    constructor(db: Client) {
+        this.db = db;
+    }
+
+    async findAll(lang: string) {
+        try {
+            const query = `
+                SELECT 
+                    r._id,
+                    rt.content as rarity
+                FROM rarity r
+                JOIN rarity_texts rt ON r._id = rt.rarity
+                WHERE rt.lang = ?
+            `;
+            const r = await this.db.execute({
+                sql: query,
+                args: [lang]
+            });
+            return r.rows;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    async findByID(id: number, lang: string) {
+        try {
+            const query = `
+                SELECT 
+                    r._id,
+                    rt.content as rarity
+                FROM rarity r
+                JOIN rarity_texts rt ON r._id = rt.rarity
+                WHERE r._id = ? AND rt.lang = ?
+            `;
+            const r = await this.db.execute({
+                sql: query,
+                args: [id, lang]
+            });
+            return r.rows[0];
+        } catch (err) {
+            throw err;
+        }
+    }
+
+}

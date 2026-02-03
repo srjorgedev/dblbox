@@ -14,6 +14,28 @@ export class TagRepo {
         this.db = db;
     }
 
+    async readAll(lang: string) {
+        try {
+            const query = `
+                SELECT 
+                    t._id,
+                    tt.content as tag
+                FROM tag t
+                LEFT JOIN tag_texts tt ON t._id = tt.tag
+                WHERE tt.lang = ?
+            `
+
+            const r = await this.db.execute({
+                sql: query,
+                args: [lang]
+            })
+
+            return r.rows;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     async createTag(id: number): Promise<createResponse> {
         try {
             const query: string = `INSERT INTO tag(_id) VALUES (?)`

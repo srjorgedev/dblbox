@@ -1,18 +1,39 @@
 import Database from "./db/connection";
-import { UnitRepo } from "./domain/repository/unit.repo";
-import { TagRepo } from "./domain/repository/tag.repo";
-import { UnitService } from "./domain/service/unit.service";
-import { UnitController } from "./http/controllers/unit.controller";
-import { EquipRepo } from "./domain/repository/equip.repo";
-import { AssetsRepo } from "./domain/repository/assets.repo";
-import { AssetsService } from "./domain/service/assets.service";
-import { AssetsController } from "./http/controllers/assets.controller";
+import {
+    AssetsRepo,
+    ChapterRepo, ColorRepo,
+    EquipRepo,
+    RarityRepo,
+    TagRepo,
+    TypeRepo,
+    UnitRepo
+} from "./domain/repository";
 
-import createUnitRoutes from "./http/routes/unit.routes";
+import {
+    AssetsService,
+    ChapterService, ColorService,
+    EquipService,
+    RarityService,
+    TagService,
+    TypeService,
+    UnitService
+} from "./domain/service";
+
+import {
+    AssetsController,
+    ChapterController, ColorController,
+    EquipController,
+    RarityController,
+    TagController,
+    TypeController,
+    UnitController
+} from "./http/controllers";
+
 import createAssetsRoutes from "./http/routes/assets.routes";
+import createDataRoutes from "./http/routes/data.routes";
+import createUnitRoutes from "./http/routes/unit.routes";
 
 import e from "express";
-
 import path from 'path';
 
 async function app() {
@@ -24,12 +45,24 @@ async function app() {
     const unitController = new UnitController(new UnitService(new UnitRepo(conn)));
     const assetsController = new AssetsController(new AssetsService(new AssetsRepo()));
 
-    const equipRepo = new EquipRepo(conn);
+    const chapterController = new ChapterController(new ChapterService(new ChapterRepo(conn)));
+    const colorController = new ColorController(new ColorService(new ColorRepo(conn)));
+    const rarityController = new RarityController(new RarityService(new RarityRepo(conn)));
+    const typeController = new TypeController(new TypeService(new TypeRepo(conn)));
+    const equipController = new EquipController(new EquipService(new EquipRepo(conn)));
+    const tagController = new TagController(new TagService(new TagRepo(conn)));
 
     const server = e()
 
     server.use("/api/v1/unit", createUnitRoutes(unitController))
     server.use("/api/v1/assets", createAssetsRoutes(assetsController))
+    server.use("/api/v1/data", createDataRoutes(
+        chapterController,
+        colorController,
+        rarityController,
+        typeController,
+        tagController
+    ))
 
     server.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`)
@@ -37,4 +70,3 @@ async function app() {
 }
 
 app()
-
