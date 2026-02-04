@@ -8,10 +8,6 @@ export class TagService {
     }
 
     async readAllTags(lang: string) {
-        try {
-            return await this.tagRepo.readAll(lang);
-        } catch (error) {
-            throw error;
-        }
+        return await this.tagRepo.readAll(lang);
     }
 }

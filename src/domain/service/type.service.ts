@@ -1,4 +1,5 @@
 import { TypeRepo } from "../repository/type.repo";
+import { AppError } from "../../utils/AppError";
 
 export class TypeService {
     private readonly typeRepo: TypeRepo;
@@ -8,18 +9,12 @@ export class TypeService {
     }
 
     async findAllTypes(lang: string) {
-        try {
-            return await this.typeRepo.findAll(lang);
-        } catch (error) {
-            throw error;
-        }
+        return await this.typeRepo.findAll(lang);
     }
 
     async findTypeByID(id: number, lang: string) {
-        try {
-            return await this.typeRepo.findByID(id, lang);
-        } catch (error) {
-            throw error;
-        }
+        const type = await this.typeRepo.findByID(id, lang);
+        if (!type) throw new AppError(`Type with ID ${id} not found`, 404);
+        return type;
     }
 }

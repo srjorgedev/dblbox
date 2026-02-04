@@ -9,15 +9,11 @@ export class AssetsController {
     }
 
     async getImage(req: Request, res: Response) {
-        try {
-            const { folder, fileName } = req.params;
-            const file = `${folder}/${fileName}`;
+        const { folder, fileName } = req.params;
+        const file = `${folder}/${fileName}`;
 
-            const filePath = await this.assetService.readAsset(file);
+        const filePath = await this.assetService.readAsset(file);
 
-            res.sendFile(filePath);
-        } catch (error) {
-            res.status(404).json({ message: error });
-        }
+        res.sendFile(filePath);
     }
 }

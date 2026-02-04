@@ -1,4 +1,5 @@
 import { EquipRepo } from "../repository/equip.repo";
+import { AppError } from "../../utils/AppError";
 
 export class EquipService {
     private readonly equipRepo: EquipRepo;
@@ -8,18 +9,12 @@ export class EquipService {
     }
 
     async findAllEquips(lang: string) {
-        try {
-            return await this.equipRepo.findAll(lang);
-        } catch (error) {
-            throw error;
-        }
+        return await this.equipRepo.findAll(lang);
     }
 
     async findEquipByID(id: number, lang: string) {
-        try {
-            return await this.equipRepo.findByID(id, lang);
-        } catch (error) {
-            throw error;
-        }
+        const equip = await this.equipRepo.findByID(id, lang);
+        if (!equip) throw new AppError(`Equipment with ID ${id} not found`, 404);
+        return equip;
     }
 }

@@ -1,11 +1,14 @@
 import { Router } from "express";
 import { UnitController } from "../controllers/unit.controller";
+import { asyncHandler } from "../../utils/asyncHandler";
 
 export default function createUnitRoutes(unitController: UnitController) {
     const ROUTER = Router()
 
-    ROUTER.get("/all", (req, res) => unitController.getAllUnits(req, res))
-    ROUTER.get("/:id", (req, res) => unitController.getUnit(req, res))
+    ROUTER.get("/all", asyncHandler((req, res, next) => unitController.getAllUnits(req, res)))
+    ROUTER.get("/:id", asyncHandler((req, res, next) => unitController.getUnit(req, res)))
+    ROUTER.post("/", asyncHandler((req, res, next) => unitController.createUnit(req, res)))
+    ROUTER.patch("/:id", asyncHandler((req, res, next) => unitController.updateUnit(req, res)))
 
     return ROUTER
 }

@@ -8,43 +8,35 @@ export class RarityRepo {
     }
 
     async findAll(lang: string) {
-        try {
-            const query = `
-                SELECT 
-                    r._id as id,
-                    rt.content as name
-                FROM rarity r
-                JOIN rarity_texts rt ON r._id = rt.rarity
-                WHERE rt.lang = ?
-            `;
-            const r = await this.db.execute({
-                sql: query,
-                args: [lang]
-            });
-            return r.rows;
-        } catch (err) {
-            throw err;
-        }
+        const query = `
+            SELECT 
+                r._id as id,
+                rt.content as name
+            FROM rarity r
+            JOIN rarity_texts rt ON r._id = rt.rarity
+            WHERE rt.lang = ?
+        `;
+        const r = await this.db.execute({
+            sql: query,
+            args: [lang]
+        });
+        return r.rows;
     }
 
     async findByID(id: number, lang: string) {
-        try {
-            const query = `
-                SELECT 
-                    r._id as id,
-                    rt.content as name
-                FROM rarity r
-                JOIN rarity_texts rt ON r._id = rt.rarity
-                WHERE r._id = ? AND rt.lang = ?
-            `;
-            const r = await this.db.execute({
-                sql: query,
-                args: [id, lang]
-            });
-            return r.rows[0];
-        } catch (err) {
-            throw err;
-        }
+        const query = `
+            SELECT 
+                r._id as id,
+                rt.content as name
+            FROM rarity r
+            JOIN rarity_texts rt ON r._id = rt.rarity
+            WHERE r._id = ? AND rt.lang = ?
+        `;
+        const r = await this.db.execute({
+            sql: query,
+            args: [id, lang]
+        });
+        return r.rows[0];
     }
 
 }

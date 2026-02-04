@@ -9,25 +9,15 @@ export class TypeController {
     }
 
     async getAllTypes(req: Request, res: Response) {
-        try {
-            const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
-            const types = await this.typeService.findAllTypes(lang);
-            return res.status(200).json(types);
-        } catch (error) {
-            console.log("CONTROLLER -> " + error);
-            return res.status(500).json(error);
-        }
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
+        const types = await this.typeService.findAllTypes(lang);
+        return res.status(200).json(types);
     }
 
     async getType(req: Request, res: Response) {
-        try {
-            const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
-            const id = Number(req.params.id);
-            const type = await this.typeService.findTypeByID(id, lang);
-            return res.status(200).json(type);
-        } catch (error) {
-            console.log("CONTROLLER -> " + error);
-            return res.status(500).json(error);
-        }
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
+        const id = Number(req.params.id);
+        const type = await this.typeService.findTypeByID(id, lang);
+        return res.status(200).json(type);
     }
 }

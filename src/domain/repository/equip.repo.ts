@@ -9,27 +9,19 @@ export class EquipRepo {
     }
 
     async findAll(lang: string) {
-        try {
-            const r = await this.db.execute({
-                sql: EquipQueries.findAll,
-                args: [lang]
-            });
-            return r.rows;
-        } catch (err) {
-            throw err;
-        }
+        const r = await this.db.execute({
+            sql: EquipQueries.findAll,
+            args: [lang]
+        });
+        return r.rows;
     }
 
     async findByID(id: number, lang: string) {
-        try {
-            const r = await this.db.execute({
-                sql: EquipQueries.findByID,
-                args: [lang, lang, lang, lang, lang, lang, id]
-            });
+        const r = await this.db.execute({
+            sql: EquipQueries.findByID,
+            args: [lang, lang, lang, lang, lang, lang, id]
+        });
 
-            return r.rows[0];
-        } catch (err) {
-            throw err;
-        }
+        return r.rows[0];
     }
 }

@@ -9,25 +9,15 @@ export class EquipController {
     }
 
     async getAllEquips(req: Request, res: Response) {
-        try {
-            const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
-            const equips = await this.equipService.findAllEquips(lang);
-            return res.status(200).json(equips);
-        } catch (error) {
-            console.log("CONTROLLER -> " + error);
-            return res.status(500).json(error);
-        }
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
+        const equips = await this.equipService.findAllEquips(lang);
+        return res.status(200).json(equips);
     }
 
     async getEquip(req: Request, res: Response) {
-        try {
-            const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
-            const id = Number(req.params.id);
-            const equip = await this.equipService.findEquipByID(id, lang);
-            return res.status(200).json(equip);
-        } catch (error) {
-            console.log("CONTROLLER -> " + error);
-            return res.status(500).json(error);
-        }
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
+        const id = Number(req.params.id);
+        const equip = await this.equipService.findEquipByID(id, lang);
+        return res.status(200).json(equip);
     }
 }

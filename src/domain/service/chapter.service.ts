@@ -1,4 +1,5 @@
 import { ChapterRepo } from "../repository/chapter.repo";
+import { AppError } from "../../utils/AppError";
 
 export class ChapterService {
     private readonly chapterRepo: ChapterRepo;
@@ -8,18 +9,12 @@ export class ChapterService {
     }
 
     async findAllChapters(lang: string) {
-        try {
-            return await this.chapterRepo.findAll(lang);
-        } catch (error) {
-            throw error;
-        }
+        return await this.chapterRepo.findAll(lang);
     }
 
     async findChapterByID(id: number, lang: string) {
-        try {
-            return await this.chapterRepo.findByID(id, lang);
-        } catch (error) {
-            throw error;
-        }
+        const chapter = await this.chapterRepo.findByID(id, lang);
+        if (!chapter) throw new AppError(`Chapter with ID ${id} not found`, 404);
+        return chapter;
     }
 }

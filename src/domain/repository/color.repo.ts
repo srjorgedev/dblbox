@@ -8,43 +8,35 @@ export class ColorRepo {
     }
 
     async findAll(lang: string) {
-        try {
-            const query = `
-                SELECT 
-                    c._id as id,
-                    ct.content as name
-                FROM color c
-                JOIN color_texts ct ON c._id = ct.color
-                WHERE ct.lang = ?
-            `;
-            const r = await this.db.execute({
-                sql: query,
-                args: [lang]
-            });
-            return r.rows;
-        } catch (err) {
-            throw err;
-        }
+        const query = `
+            SELECT 
+                c._id as id,
+                ct.content as name
+            FROM color c
+            JOIN color_texts ct ON c._id = ct.color
+            WHERE ct.lang = ?
+        `;
+        const r = await this.db.execute({
+            sql: query,
+            args: [lang]
+        });
+        return r.rows;
     }
 
     async findByID(id: number, lang: string) {
-        try {
-            const query = `
-                SELECT 
-                    c._id as id,
-                    ct.content as name
-                FROM color c
-                JOIN color_texts ct ON c._id = ct.color
-                WHERE c._id = ? AND ct.lang = ?
-            `;
-            const r = await this.db.execute({
-                sql: query,
-                args: [id, lang]
-            });
-            return r.rows[0];
-        } catch (err) {
-            throw err;
-        }
+        const query = `
+            SELECT 
+                c._id as id,
+                ct.content as name
+            FROM color c
+            JOIN color_texts ct ON c._id = ct.color
+            WHERE c._id = ? AND ct.lang = ?
+        `;
+        const r = await this.db.execute({
+            sql: query,
+            args: [id, lang]
+        });
+        return r.rows[0];
     }
 
 }

@@ -1,4 +1,5 @@
 import { ColorRepo } from "../repository/color.repo";
+import { AppError } from "../../utils/AppError";
 
 export class ColorService {
     private readonly colorRepo: ColorRepo;
@@ -8,18 +9,12 @@ export class ColorService {
     }
 
     async findAllColors(lang: string) {
-        try {
-            return await this.colorRepo.findAll(lang);
-        } catch (error) {
-            throw error;
-        }
+        return await this.colorRepo.findAll(lang);
     }
 
     async findColorByID(id: number, lang: string) {
-        try {
-            return await this.colorRepo.findByID(id, lang);
-        } catch (error) {
-            throw error;
-        }
+        const color = await this.colorRepo.findByID(id, lang);
+        if (!color) throw new AppError(`Color with ID ${id} not found`, 404);
+        return color;
     }
 }

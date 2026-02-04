@@ -1,7 +1,8 @@
 import { UnitRepo } from "../repository/unit.repo";
 import type {
-    Unit, DataArray, DataSimple, DataObject
+    Unit, DataArray, DataSimple, DataObject, UnitPOST, UnitUpdate, PaginatedResponse
 } from "../../types/unit.types";
+import { AppError } from "../../utils/AppError";
 
 export class UnitService {
     private readonly unitRepo: UnitRepo;
@@ -10,54 +11,81 @@ export class UnitService {
         this.unitRepo = unitRepo;
     }
 
-    async readAllUnitsPages(lang: string, limit: number, page: number): Promise<Unit[]> {
-        try {
-            const offset = (page - 1) * limit;
-            const units = await this.unitRepo.findPages(lang, limit, offset);
-
-            return units
-                .map(unit => this.parseUnitData(unit))
-                .filter((unit): unit is Unit => unit !== null);
-
-        } catch (error) {
-            throw error;
-        }
+    async createUnit(data: UnitPOST): Promise<Unit> {
+        await this.unitRepo.create(data);
+        return await this.readUnitByID(data.id, "en");
     }
 
-    async readAllUnits(lang: string): Promise<Unit[]> {
-        try {
-            const units = await this.unitRepo.findAll(lang);
+    async updateUnit(id: string, data: UnitUpdate): Promise<Unit> {
+        const unit = await this.unitRepo.findByID(id, "en");
+        if (!unit) throw new AppError(`Unit with ID ${id} not found`, 404);
 
-            return units
-                .map(unit => this.parseUnitData(unit))
-                .filter((unit): unit is Unit => unit !== null);
-        } catch (error) {
-            throw error;
-        }
+        await this.unitRepo.update(id, data);
+        return await this.readUnitByID(id, "en");
+    }
+
+    async readAllUnitsPages(lang: string, limit: number, page: number): Promise<PaginatedResponse<Unit>> {
+        const offset = (page - 1) * limit;
+        const total = Number(await this.unitRepo.countTotal());
+        const units = await this.unitRepo.findPages(lang, limit, offset);
+
+        const data = units
+            .map(unit => this.parseUnitData(unit))
+            .filter((unit): unit is Unit => unit !== null);
+
+        const totalPages = Math.ceil(total / limit);
+        const hasNextPage = page < totalPages;
+        const hasPrevPage = page > 1;
+
+        return {
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages,
+                nextPage: hasNextPage ? page + 1 : null,
+                prevPage: hasPrevPage ? page - 1 : null,
+                hasNextPage,
+                hasPrevPage
+            },
+            data
+        };
+    }
+
+    async readAllUnits(lang: string): Promise<PaginatedResponse<Unit>> {
+        const total = Number(await this.unitRepo.countTotal());
+        const units = await this.unitRepo.findAll(lang);
+
+        const data = units
+            .map(unit => this.parseUnitData(unit))
+            .filter((unit): unit is Unit => unit !== null);
+
+        return {
+            meta: {
+                total,
+                hasNextPage: false,
+                hasPrevPage: false
+            },
+            data
+        };
     }
 
     async readUnitByNum(num: number, lang: string) {
-        try {
-            const unit = await this.unitRepo.findByNum(num, lang);
-            return this.parseUnitData(unit);
-        } catch (error) {
-            console.log("SERVICE -> " + error);
-            throw error;
-        }
+        const unit = await this.unitRepo.findByNum(num, lang);
+        if (!unit) throw new AppError(`Unit with number ${num} not found`, 404);
+        return this.parseUnitData(unit);
     }
 
     async readUnitByID(id: string, lang: string) {
-        try {
-            const unit = await this.unitRepo.findByID(id, lang);
-            return this.parseUnitData(unit);
-        } catch (error) {
-            console.log("SERVICE -> " + error);
-            throw error;
-        }
+        const unit = await this.unitRepo.findByID(id, lang);
+        if (!unit) throw new AppError(`Unit with ID ${id} not found`, 404);
+        return this.parseUnitData(unit) as Unit;
     }
 
     private parseUnitData(unit: any): Unit | null {
         if (!unit) return null;
+
+        const states = unit.transform + unit.tagswitch + unit.fusion + 1;
 
         return {
             _id: unit.unit_id,
@@ -66,6 +94,8 @@ export class UnitService {
             lf: Boolean(unit.lf),
             zenkai: Boolean(unit.zenkai),
             tagswitch: Boolean(unit.tagswitch),
+            fusion: Boolean(unit.fusion),
+            states: states,
             name: this.formatSimpleList(unit.unit_names),
             rarity: this.splitDoubleColon(unit.rarity_texts),
             chapter: this.splitDoubleColon(unit.chapter_texts),

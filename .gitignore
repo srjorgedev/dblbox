@@ -1,3 +1,5 @@
 node_modules
 .env
 dist
+GEMINI.md
+CHANGELOG_AND_GUIDE.md

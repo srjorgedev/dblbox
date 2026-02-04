@@ -35,6 +35,7 @@ import createUnitRoutes from "./http/routes/unit.routes";
 
 import e from "express";
 import path from 'path';
+import { globalErrorHandler } from "./http/middlewares/error.middleware";
 
 async function app() {
     const PORT = process.env.PORT || 1110
@@ -53,6 +54,7 @@ async function app() {
     const tagController = new TagController(new TagService(new TagRepo(conn)));
 
     const server = e()
+    server.use(e.json())
 
     server.use("/api/v1/unit", createUnitRoutes(unitController))
     server.use("/api/v1/assets", createAssetsRoutes(assetsController))
@@ -63,6 +65,8 @@ async function app() {
         typeController,
         tagController
     ))
+
+    server.use(globalErrorHandler);
 
     server.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`)
