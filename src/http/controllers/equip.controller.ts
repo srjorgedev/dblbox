@@ -1,4 +1,4 @@
-import { EquipService } from "../../domain/service/equip.service";
+import { EquipService } from "@/domain/service/equip.service";
 import { Request, Response } from "express";
 
 export class EquipController {

@@ -5,8 +5,8 @@ import {
     RarityController,
     TagController,
     TypeController
-} from "../controllers";
-import { asyncHandler } from "../../utils/asyncHandler";
+} from "@/http/controllers";
+import { asyncHandler } from "@/utils/asyncHandler";
 
 export default function createDataRoutes(
     chapterController: ChapterController,

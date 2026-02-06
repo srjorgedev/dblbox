@@ -1,4 +1,4 @@
-import { TagRepo } from "../repository/tag.repo";
+import { TagRepo } from "@/domain/repository/tag.repo";
 
 export class TagService {
     private readonly tagRepo: TagRepo;

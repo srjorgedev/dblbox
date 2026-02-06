@@ -1,5 +1,5 @@
-import { TypeRepo } from "../repository/type.repo";
-import { AppError } from "../../utils/AppError";
+import { TypeRepo } from "@/domain/repository/type.repo";
+import { AppError } from "@/utils/AppError";
 
 export class TypeService {
     private readonly typeRepo: TypeRepo;

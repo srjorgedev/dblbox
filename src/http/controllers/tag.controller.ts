@@ -1,4 +1,4 @@
-import { TagService } from "../../domain/service/tag.service";
+import { TagService } from "@/domain/service/tag.service";
 import { Request, Response } from "express";
 
 export class TagController {

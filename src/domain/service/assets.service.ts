@@ -1,5 +1,5 @@
-import { AssetsRepo } from "../repository/assets.repo";
-import { AppError } from "../../utils/AppError";
+import { AssetsRepo } from "@/domain/repository/assets.repo";
+import { AppError } from "@/utils/AppError";
 
 export class AssetsService {
     private readonly assetsRepo: AssetsRepo;

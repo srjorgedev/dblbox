@@ -1,5 +1,5 @@
-import { ChapterRepo } from "../repository/chapter.repo";
-import { AppError } from "../../utils/AppError";
+import { ChapterRepo } from "@/domain/repository/chapter.repo";
+import { AppError } from "@/utils/AppError";
 
 export class ChapterService {
     private readonly chapterRepo: ChapterRepo;

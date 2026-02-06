@@ -1,5 +1,5 @@
-import { RarityRepo } from "../repository/rarity.repo";
-import { AppError } from "../../utils/AppError";
+import { RarityRepo } from "@/domain/repository/rarity.repo";
+import { AppError } from "@/utils/AppError";
 
 export class RarityService {
     private readonly rarityRepo: RarityRepo;

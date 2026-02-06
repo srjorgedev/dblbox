@@ -1,4 +1,4 @@
-import { RarityService } from "../../domain/service/rarity.service";
+import { RarityService } from "@/domain/service/rarity.service";
 import { Request, Response } from "express";
 
 export class RarityController {

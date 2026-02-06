@@ -1,8 +1,8 @@
-import { UnitRepo } from "../repository/unit.repo";
+import { UnitRepo } from "@/domain/repository/unit.repo";
 import type {
     Unit, DataArray, DataSimple, DataObject, UnitPOST, UnitUpdate, PaginatedResponse
-} from "../../types/unit.types";
-import { AppError } from "../../utils/AppError";
+} from "@/types/unit.types";
+import { AppError } from "@/utils/AppError";
 
 export class UnitService {
     private readonly unitRepo: UnitRepo;
@@ -24,10 +24,10 @@ export class UnitService {
         return await this.readUnitByID(id, "en");
     }
 
-    async readAllUnitsPages(lang: string, limit: number, page: number): Promise<PaginatedResponse<Unit>> {
+    async readAllUnitsPages(lang: string, limit: number, page: number, order: string): Promise<PaginatedResponse<Unit>> {
         const offset = (page - 1) * limit;
         const total = Number(await this.unitRepo.countTotal());
-        const units = await this.unitRepo.findPages(lang, limit, offset);
+        const units = await this.unitRepo.findPages(lang, limit, offset, order);
 
         const data = units
             .map(unit => this.parseUnitData(unit))
@@ -52,9 +52,9 @@ export class UnitService {
         };
     }
 
-    async readAllUnits(lang: string): Promise<PaginatedResponse<Unit>> {
+    async readAllUnits(lang: string, order: string): Promise<PaginatedResponse<Unit>> {
         const total = Number(await this.unitRepo.countTotal());
-        const units = await this.unitRepo.findAll(lang);
+        const units = await this.unitRepo.findAll(lang, order);
 
         const data = units
             .map(unit => this.parseUnitData(unit))

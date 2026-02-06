@@ -1,4 +1,4 @@
-import { TypeService } from "../../domain/service/type.service";
+import { TypeService } from "@/domain/service/type.service";
 import { Request, Response } from "express";
 
 export class TypeController {

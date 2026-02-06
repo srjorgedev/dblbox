@@ -1,6 +1,6 @@
-import { UnitService } from "../../domain/service/unit.service";
+import { UnitService } from "@/domain/service/unit.service";
 import { Request, Response } from "express"
-import type { Unit, UnitPOST, UnitUpdate, PaginatedResponse } from "../../types/unit.types";
+import type { Unit, UnitPOST, UnitUpdate, PaginatedResponse } from "@/types/unit.types";
 
 export class UnitController {
     private readonly unitService: UnitService;
@@ -26,13 +26,18 @@ export class UnitController {
         const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
         const limit = req.query.limit
         const page = req.query.page
+        const order = req.query.order == undefined ? "history" : req.query.order as string;
+
+        if (!(["history", "rarity"].includes(order))) {
+            return res.status(400).json({ message: "Invalid order" });
+        }
 
         let response: PaginatedResponse<Unit>;
 
         if (limit == undefined && page == undefined) {
-            response = await this.unitService.readAllUnits(lang);
+            response = await this.unitService.readAllUnits(lang, order);
         } else {
-            response = await this.unitService.readAllUnitsPages(lang, Number(limit), Number(page));
+            response = await this.unitService.readAllUnitsPages(lang, Number(limit), Number(page), order);
         }
 
         return res.status(200).json(response);

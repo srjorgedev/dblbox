@@ -27,7 +27,7 @@ export const UnitQueries = {
         LEFT JOIN unit_tag ut ON ut.unit = u._id
 		LEFT JOIN tag_texts tt ON tt.tag = ut.tag and tt.lang = ?
         GROUP BY u._id
-        ORDER BY u._id DESC
+        <order>
         LIMIT ?
         OFFSET ?
     `,
@@ -56,7 +56,7 @@ export const UnitQueries = {
         LEFT JOIN unit_tag ut ON ut.unit = u._id
 		LEFT JOIN tag_texts tt ON tt.tag = ut.tag and tt.lang = ?
         GROUP BY u._id
-        ORDER BY u._id DESC
+        <order>
     `,
     findByID: `
         SELECT 
@@ -141,5 +141,21 @@ export const UnitQueries = {
         WHERE un.content LIKE '%' || ? || '%'
         GROUP BY u._id
         ORDER BY u._id DESC
+    `
+}
+
+type OrderQueriesType = {
+    [key: string]: string;
+}
+
+export const UnitQueriesOrder: OrderQueriesType = {
+    "history": `
+    ORDER BY u._id DESC
+    `,
+    "rarity": `
+    ORDER BY 
+	u.rarity DESC, 
+	u.lf DESC, 
+	u._id DESC
     `
 }

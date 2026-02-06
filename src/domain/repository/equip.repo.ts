@@ -1,5 +1,5 @@
 import { Client } from "@libsql/client";
-import { EquipQueries } from "../../db/queries/equip.query";
+import { EquipQueries } from "@/domain/repository/queries/equip.query";
 
 export class EquipRepo {
     private readonly db: Client;

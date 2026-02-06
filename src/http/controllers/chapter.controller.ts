@@ -1,4 +1,4 @@
-import { ChapterService } from "../../domain/service/chapter.service";
+import { ChapterService } from "@/domain/service/chapter.service";
 import { Request, Response } from "express";
 
 export class ChapterController {

@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { AssetsController } from "../controllers/assets.controller";
-import { asyncHandler } from "../../utils/asyncHandler";
+import { AssetsController } from "@/http/controllers/assets.controller";
+import { asyncHandler } from "@/utils/asyncHandler";
 
 export default function createAssetsRoutes(assetsController: AssetsController): Router {
     const ROUTER = Router();

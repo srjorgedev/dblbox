@@ -1,5 +1,5 @@
-import { ColorRepo } from "../repository/color.repo";
-import { AppError } from "../../utils/AppError";
+import { ColorRepo } from "@/domain/repository/color.repo";
+import { AppError } from "@/utils/AppError";
 
 export class ColorService {
     private readonly colorRepo: ColorRepo;

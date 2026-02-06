@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { UnitController } from "../controllers/unit.controller";
-import { asyncHandler } from "../../utils/asyncHandler";
+import { UnitController } from "@/http/controllers/unit.controller";
+import { asyncHandler } from "@/utils/asyncHandler";
 
 export default function createUnitRoutes(unitController: UnitController) {
     const ROUTER = Router()

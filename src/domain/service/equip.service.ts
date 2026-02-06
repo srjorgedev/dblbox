@@ -1,5 +1,5 @@
-import { EquipRepo } from "../repository/equip.repo";
-import { AppError } from "../../utils/AppError";
+import { EquipRepo } from "@/domain/repository/equip.repo";
+import { AppError } from "@/utils/AppError";
 
 export class EquipService {
     private readonly equipRepo: EquipRepo;

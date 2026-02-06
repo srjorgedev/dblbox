@@ -1,7 +1,7 @@
 import { Client } from "@libsql/client";
-import { UnitQueries } from "../../db/queries/unit.query";
-import type { UnitPOST, UnitUpdate } from "../../types/unit.types";
-import { AppError } from "../../utils/AppError";
+import { UnitQueries, UnitQueriesOrder } from "@/domain/repository/queries/unit.query";
+import type { UnitPOST, UnitUpdate } from "@/types/unit.types";
+import { AppError } from "@/utils/AppError";
 
 type Unit = {
     id: string;
@@ -63,17 +63,17 @@ export class UnitRepo {
         return r.rows[0] as unknown as Out;
     }
 
-    async findAll(lang: string): Promise<Out[]> { // -> Find all returns the summary version of all units
+    async findAll(lang: string, order: string): Promise<Out[]> { // -> Find all returns the summary version of all units
         const r = await this.db.execute({
-            sql: UnitQueries.findAll,
+            sql: UnitQueries.findAll.replace("<order>", UnitQueriesOrder[order]),
             args: [lang, lang, lang, lang, lang, lang]
         });
         return r.rows as unknown as Out[];
     }
 
-    async findPages(lang: string, limit: number, offset: number): Promise<Out[]> {
+    async findPages(lang: string, limit: number, offset: number, order: string): Promise<Out[]> {
         const r = await this.db.execute({
-            sql: UnitQueries.findPages,
+            sql: UnitQueries.findPages.replace("<order>", UnitQueriesOrder[order]),
             args: [lang, lang, lang, lang, lang, lang, limit, offset]
         });
         return r.rows as unknown as Out[];

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../../utils/AppError';
+import { AppError } from "@/utils/AppError";
 
 export const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     let statusCode = 500;

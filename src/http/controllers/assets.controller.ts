@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AssetsService } from '../../domain/service/assets.service';
+import { AssetsService } from "@/domain/service/assets.service";
 
 export class AssetsController {
     private readonly assetService: AssetsService;
