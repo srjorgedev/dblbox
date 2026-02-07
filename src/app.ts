@@ -16,6 +16,7 @@ async function app() {
     server.use(cors());
 
     const dblBoxRouter = initDblBoxModule(conn);
+    server.use("/api/v1/assets", e.static(path.join(process.cwd(), 'data', 'assets')));
     server.use("/api/v1", dblBoxRouter);
 
     server.use(globalErrorHandler);

@@ -45,7 +45,7 @@ export function initDblBoxModule(db: Client): Router {
 
     // Routes
     router.use("/unit", createUnitRoutes(unitController));
-    router.use("/assets", createAssetsRoutes(assetsController));
+    // router.use("/assets", createAssetsRoutes(assetsController));
     router.use("/data", createDataRoutes(
         chapterController,
         colorController,
