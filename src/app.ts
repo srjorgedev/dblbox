@@ -3,6 +3,7 @@ import path from 'path';
 import Database from "@/db/connection";
 import { globalErrorHandler } from "@/http/middlewares/error.middleware";
 import { initDblBoxModule } from "@/dblbox.init";
+import cors from "cors"
 
 async function app() {
     const PORT = process.env.PORT || 1110;
@@ -12,6 +13,7 @@ async function app() {
 
     const server = e();
     server.use(e.json());
+    server.use(cors());
 
     const dblBoxRouter = initDblBoxModule(conn);
     server.use("/api/v1", dblBoxRouter);
