@@ -1,6 +1,6 @@
 import { UnitRepo } from "@/domain/repository/unit.repo";
 import type {
-    Unit, DataArray, DataSimple, DataObject, UnitPOST, UnitUpdate, PaginatedResponse
+    Unit, DataArray, DataSimple, DataObject, UnitPOST, UnitUpdate, PaginatedResponse, UnitRaw
 } from "@/types/unit.types";
 import { AppError } from "@/utils/AppError";
 
@@ -82,7 +82,7 @@ export class UnitService {
         return this.parseUnitData(unit) as Unit;
     }
 
-    private parseUnitData(unit: any): Unit | null {
+    private parseUnitData(unit: UnitRaw): Unit | null {
         if (!unit) return null;
 
         const states = unit.transform + unit.tagswitch + unit.fusion + 1;

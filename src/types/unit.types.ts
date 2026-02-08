@@ -15,6 +15,22 @@ export type Unit = {
     readonly tags: DataObject;
 }
 
+export type UnitRaw = {
+    readonly unit_id: string
+    readonly unit_num: number
+    readonly transform: number
+    readonly lf: number
+    readonly zenkai: number
+    readonly tagswitch: number
+    readonly fusion: number
+    readonly unit_names: string
+    readonly rarity_texts: string
+    readonly type_texts: string
+    readonly chapter_texts: string
+    readonly color_texts: string
+    readonly tag_texts: string;
+}
+
 export type DataSimple = {
     readonly id: number;
     readonly name: string;
