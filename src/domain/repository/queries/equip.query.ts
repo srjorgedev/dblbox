@@ -37,4 +37,5 @@ export const EquipQueries = {
     WHERE e._id = ?
     GROUP BY e._id
     `,
+    
 }
