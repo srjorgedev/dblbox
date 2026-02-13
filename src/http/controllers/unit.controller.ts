@@ -17,8 +17,9 @@ export class UnitController {
 
     async updateUnit(req: Request, res: Response) {
         const id = String(req.params.id);
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
         const body = req.body as UnitUpdate;
-        const updatedUnit = await this.unitService.updateUnit(id, body);
+        const updatedUnit = await this.unitService.updateUnit(id, body, lang);
         return res.status(200).json(updatedUnit);
     }
 
@@ -49,8 +50,13 @@ export class UnitController {
 
         let data: any;
 
-        if (/^\d+$/.test(id)) data = await this.unitService.readUnitByNum(Number(id), lang)
-        else data = await this.unitService.readUnitByID(id, lang);
+        if (/^\d+$/.test(id)) {
+            data = await this.unitService.readUnitByNum(Number(id), lang);
+        } else if (id.startsWith("DBL")) {
+            data = await this.unitService.readUnitByID(id, lang);
+        } else {
+            data = await this.unitService.findUnitsByName(id, lang);
+        }
 
         return res.status(200).json(data)
     }

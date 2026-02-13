@@ -39,10 +39,10 @@ export class UnitRepo {
         this.db = db;
     }
 
-    async findByName(name: string): Promise<Out[]> {
+    async findByName(name: string, lang: string): Promise<Out[]> {
         const r = await this.db.execute({
             sql: UnitQueries.findByName,
-            args: [name]
+            args: [lang, lang, lang, lang, lang, lang, name]
         });
         return r.rows as unknown as Out[];
     }
@@ -50,7 +50,7 @@ export class UnitRepo {
     async findByID(id: string, lang: string): Promise<Out> {
         const r = await this.db.execute({
             sql: UnitQueries.findByID,
-            args: [lang, lang, lang, lang, lang, lang, id]
+            args: [lang, lang, lang, lang, lang, lang, lang, lang, id]
         });
         return r.rows[0] as unknown as Out;
     }
@@ -58,12 +58,12 @@ export class UnitRepo {
     async findByNum(num: number, lang: string): Promise<Out> {
         const r = await this.db.execute({
             sql: UnitQueries.findByNum,
-            args: [lang, lang, lang, lang, lang, lang, num]
+            args: [lang, lang, lang, lang, lang, lang, lang, lang, num]
         });
         return r.rows[0] as unknown as Out;
     }
 
-    async findAll(lang: string, order: string): Promise<Out[]> { // -> Find all returns the summary version of all units
+    async findAll(lang: string, order: string): Promise<Out[]> {
         const r = await this.db.execute({
             sql: UnitQueries.findAll.replace("<order>", UnitQueriesOrder[order]),
             args: [lang, lang, lang, lang, lang, lang]

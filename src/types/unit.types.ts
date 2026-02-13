@@ -13,6 +13,8 @@ export type Unit = {
     readonly type: DataSimple;
     readonly color: DataObject;
     readonly tags: DataObject;
+    readonly abilities?: AbilitiesObject;
+    readonly zenkai_abilities?: AbilitiesObject;
 }
 
 export type UnitRaw = {
@@ -29,6 +31,20 @@ export type UnitRaw = {
     readonly chapter_texts: string
     readonly color_texts: string
     readonly tag_texts: string;
+    readonly ability_texts?: string;
+}
+
+export type Ability = {
+    readonly number: number;
+    readonly zenkai: boolean;
+    readonly title: string;
+    readonly content: string;
+    readonly type: DataSimple;
+}
+
+export type AbilitiesObject = {
+    readonly count: number;
+    readonly content: Record<string, Ability | Ability[]>;
 }
 
 export type DataSimple = {

@@ -1,6 +1,6 @@
 import { UnitRepo } from "@/domain/repository/unit.repo";
 import type {
-    Unit, DataArray, DataSimple, DataObject, UnitPOST, UnitUpdate, PaginatedResponse, UnitRaw
+    Unit, DataArray, DataSimple, DataObject, UnitPOST, UnitUpdate, PaginatedResponse, UnitRaw, AbilitiesObject, Ability
 } from "@/types/unit.types";
 import { AppError } from "@/utils/AppError";
 
@@ -16,12 +16,19 @@ export class UnitService {
         return await this.readUnitByID(data.id, "en");
     }
 
-    async updateUnit(id: string, data: UnitUpdate): Promise<Unit> {
-        const unit = await this.unitRepo.findByID(id, "en");
+    async updateUnit(id: string, data: UnitUpdate, lang: string = "en"): Promise<Unit> {
+        const unit = await this.unitRepo.findByID(id, lang);
         if (!unit) throw new AppError(`Unit with ID ${id} not found`, 404);
 
         await this.unitRepo.update(id, data);
-        return await this.readUnitByID(id, "en");
+        return await this.readUnitByID(id, lang);
+    }
+
+    async findUnitsByName(name: string, lang: string): Promise<Unit[]> {
+        const units = await this.unitRepo.findByName(name, lang);
+        return units
+            .map(unit => this.parseUnitData(unit))
+            .filter((unit): unit is Unit => unit !== null);
     }
 
     async readAllUnitsPages(lang: string, limit: number, page: number, order: string): Promise<PaginatedResponse<Unit>> {
@@ -101,7 +108,9 @@ export class UnitService {
             chapter: this.splitDoubleColon(unit.chapter_texts),
             type: this.splitDoubleColon(unit.type_texts),
             color: this.formatComplexList(unit.color_texts),
-            tags: this.formatComplexList(unit.tag_texts)
+            tags: this.formatComplexList(unit.tag_texts),
+            abilities: unit.ability_texts ? this.formatAbilityList(unit.ability_texts, false) : undefined,
+            zenkai_abilities: unit.ability_texts ? this.formatAbilityList(unit.ability_texts, true) : undefined
         };
     }
 
@@ -114,7 +123,7 @@ export class UnitService {
     }
 
     private formatSimpleList(text: string): DataArray {
-        const items = (text || "").split(',').filter(Boolean);
+        const items = (text || "").split('|||').filter(Boolean);
         const content = items.map(item => {
             const parts = item.split('::');
             return parts[parts.length - 1];
@@ -123,9 +132,54 @@ export class UnitService {
     }
 
     private formatComplexList(text: string): DataObject {
-        const items = (text || "").split(',').filter(Boolean);
+        const items = (text || "").split('|||').filter(Boolean);
         const content = items.map(item => this.splitDoubleColon(item));
         return { count: content.length, content };
+    }
+
+    private formatAbilityList(text: string, isZenkai: boolean): AbilitiesObject {
+        const items = (text || "").split('|||').filter(Boolean);
+        const allAbilities: Ability[] = items.map(item => {
+            const parts = item.split('::');
+            return {
+                number: Number(parts[0]) || 0,
+                zenkai: parts[1] === "1",
+                title: parts[2] || "Unknown",
+                content: parts[3] || "Unknown",
+                type: {
+                    id: Number(parts[4]) || 0,
+                    name: parts[5] || "Unknown"
+                }
+            };
+        });
+
+        // Filter by Zenkai status
+        const abilities = allAbilities.filter(a => a.zenkai === isZenkai);
+
+        if (abilities.length === 0) {
+            return { count: 0, content: {} };
+        }
+
+        // Order by number
+        abilities.sort((a, b) => a.number - b.number);
+
+        // Group by ability type name
+        const groups: Record<string, Ability[]> = {};
+        for (const ability of abilities) {
+            const typeName = ability.type.name;
+            if (!groups[typeName]) {
+                groups[typeName] = [];
+            }
+            groups[typeName].push(ability);
+        }
+
+        // Simplify: single item instead of array if length is 1
+        const content: Record<string, Ability | Ability[]> = {};
+        for (const [key, value] of Object.entries(groups)) {
+            content[key] = value.length === 1 ? value[0] : value;
+        }
+
+        return { count: abilities.length, content };
     }
 
 }

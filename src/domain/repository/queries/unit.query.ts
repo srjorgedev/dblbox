@@ -11,22 +11,13 @@ export const UnitQueries = {
             u.zenkai,
             u.tagswitch,
             u.fusion,
-        GROUP_CONCAT(DISTINCT un.num || '::' || un.lang || '::' || un.content) AS unit_names,
-        GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
-        GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
-        GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-        GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts,
-		GROUP_CONCAT(DISTINCT ut.tag || '::' || tt.lang || '::' || tt.content) AS tag_texts
+            (SELECT GROUP_CONCAT(un.num || '::' || un.lang || '::' || un.content, '|||') FROM unit_name un WHERE un.unit = u._id AND un.lang = ?) AS unit_names,
+            (SELECT r.rarity || '::' || r.lang || '::' || r.content FROM rarity_texts r WHERE r.rarity = u.rarity AND r.lang = ?) AS rarity_texts,
+            (SELECT t.type || '::' || t.lang || '::' || t.content FROM type_texts t WHERE t.type = u.type AND t.lang = ?) AS type_texts,
+            (SELECT ch.chapter || '::' || ch.lang || '::' || ch.content FROM chapter_texts ch WHERE ch.chapter = u.chapter AND ch.lang = ?) AS chapter_texts,
+            (SELECT GROUP_CONCAT(uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content, '|||') FROM unit_color uc JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ? WHERE uc.unit = u._id) AS color_texts,
+            (SELECT GROUP_CONCAT(ut.tag || '::' || tt.lang || '::' || tt.content, '|||') FROM unit_tag ut JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ? WHERE ut.unit = u._id) AS tag_texts
         FROM unit u
-        LEFT JOIN unit_name un ON un.unit = u._id and un.lang = ?
-        LEFT JOIN rarity_texts r ON r.rarity = u.rarity and r.lang = ?
-        LEFT JOIN type_texts t ON t.type = u.type and t.lang = ?
-        LEFT JOIN chapter_texts ch ON ch.chapter = u.chapter and ch.lang = ?
-        LEFT JOIN unit_color uc ON uc.unit = u._id
-        LEFT JOIN color_texts ct ON ct.color = uc.color and ct.lang = ?
-        LEFT JOIN unit_tag ut ON ut.unit = u._id
-		LEFT JOIN tag_texts tt ON tt.tag = ut.tag and tt.lang = ?
-        GROUP BY u._id
         <order>
         LIMIT ?
         OFFSET ?
@@ -40,22 +31,13 @@ export const UnitQueries = {
             u.zenkai,
             u.tagswitch,
             u.fusion,
-        GROUP_CONCAT(DISTINCT un.num || '::' || un.lang || '::' || un.content) AS unit_names,
-        GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
-        GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
-        GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-        GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts,
-		GROUP_CONCAT(DISTINCT ut.tag || '::' || tt.lang || '::' || tt.content) AS tag_texts
+            (SELECT GROUP_CONCAT(un.num || '::' || un.lang || '::' || un.content, '|||') FROM unit_name un WHERE un.unit = u._id AND un.lang = ?) AS unit_names,
+            (SELECT r.rarity || '::' || r.lang || '::' || r.content FROM rarity_texts r WHERE r.rarity = u.rarity AND r.lang = ?) AS rarity_texts,
+            (SELECT t.type || '::' || t.lang || '::' || t.content FROM type_texts t WHERE t.type = u.type AND t.lang = ?) AS type_texts,
+            (SELECT ch.chapter || '::' || ch.lang || '::' || ch.content FROM chapter_texts ch WHERE ch.chapter = u.chapter AND ch.lang = ?) AS chapter_texts,
+            (SELECT GROUP_CONCAT(uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content, '|||') FROM unit_color uc JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ? WHERE uc.unit = u._id) AS color_texts,
+            (SELECT GROUP_CONCAT(ut.tag || '::' || tt.lang || '::' || tt.content, '|||') FROM unit_tag ut JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ? WHERE ut.unit = u._id) AS tag_texts
         FROM unit u
-        LEFT JOIN unit_name un ON un.unit = u._id and un.lang = ?
-        LEFT JOIN rarity_texts r ON r.rarity = u.rarity and r.lang = ?
-        LEFT JOIN type_texts t ON t.type = u.type and t.lang = ?
-        LEFT JOIN chapter_texts ch ON ch.chapter = u.chapter and ch.lang = ?
-        LEFT JOIN unit_color uc ON uc.unit = u._id
-        LEFT JOIN color_texts ct ON ct.color = uc.color and ct.lang = ?
-        LEFT JOIN unit_tag ut ON ut.unit = u._id
-		LEFT JOIN tag_texts tt ON tt.tag = ut.tag and tt.lang = ?
-        GROUP BY u._id
         <order>
     `,
     findByID: `
@@ -67,24 +49,15 @@ export const UnitQueries = {
             u.zenkai,
             u.tagswitch,
             u.fusion,
-        GROUP_CONCAT(DISTINCT un.num || '::' || un.lang || '::' || un.content) AS unit_names,
-        GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
-        GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
-        GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-        GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts,
-		GROUP_CONCAT(DISTINCT ut.tag || '::' || tt.lang || '::' || tt.content) AS tag_texts
+            (SELECT GROUP_CONCAT(un.num || '::' || un.lang || '::' || un.content, '|||') FROM unit_name un WHERE un.unit = u._id AND un.lang = ?) AS unit_names,
+            (SELECT r.rarity || '::' || r.lang || '::' || r.content FROM rarity_texts r WHERE r.rarity = u.rarity AND r.lang = ?) AS rarity_texts,
+            (SELECT t.type || '::' || t.lang || '::' || t.content FROM type_texts t WHERE t.type = u.type AND t.lang = ?) AS type_texts,
+            (SELECT ch.chapter || '::' || ch.lang || '::' || ch.content FROM chapter_texts ch WHERE ch.chapter = u.chapter AND ch.lang = ?) AS chapter_texts,
+            (SELECT GROUP_CONCAT(uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content, '|||') FROM unit_color uc JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ? WHERE uc.unit = u._id) AS color_texts,
+            (SELECT GROUP_CONCAT(ut.tag || '::' || tt.lang || '::' || tt.content, '|||') FROM unit_tag ut JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ? WHERE ut.unit = u._id) AS tag_texts,
+            (SELECT GROUP_CONCAT(a.number || '::' || a.zenkai || '::' || a.title || '::' || a.content || '::' || a.ability_type || '::' || att.content, '|||') FROM ability a JOIN ability_type_texts att ON att.ability_type = a.ability_type AND att.lang = ? WHERE a.unit = u._id AND a.lang = ?) AS ability_texts
         FROM unit u
-        LEFT JOIN unit_name un ON un.unit = u._id AND un.lang = ?
-        LEFT JOIN rarity_texts r ON r.rarity = u.rarity AND  r.lang = ?
-        LEFT JOIN type_texts t ON t.type = u.type AND  t.lang = ?
-        LEFT JOIN chapter_texts ch ON ch.chapter = u.chapter AND ch.lang  = ?
-        LEFT JOIN unit_color uc ON uc.unit = u._id
-        LEFT JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ?
-		LEFT JOIN unit_tag ut ON ut.unit = u._id
-		LEFT JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ?
         WHERE u._id = ?
-        GROUP BY u._id
-        ORDER BY u._id DESC
     `,
     findByNum: `
         SELECT 
@@ -95,24 +68,15 @@ export const UnitQueries = {
             u.zenkai,
             u.tagswitch,
             u.fusion,
-        GROUP_CONCAT(DISTINCT un.num || '::' || un.lang || '::' || un.content) AS unit_names,
-        GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
-        GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
-        GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-        GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts,
-		GROUP_CONCAT(DISTINCT ut.tag || '::' || tt.lang || '::' || tt.content) AS tag_texts
+            (SELECT GROUP_CONCAT(un.num || '::' || un.lang || '::' || un.content, '|||') FROM unit_name un WHERE un.unit = u._id AND un.lang = ?) AS unit_names,
+            (SELECT r.rarity || '::' || r.lang || '::' || r.content FROM rarity_texts r WHERE r.rarity = u.rarity AND r.lang = ?) AS rarity_texts,
+            (SELECT t.type || '::' || t.lang || '::' || t.content FROM type_texts t WHERE t.type = u.type AND t.lang = ?) AS type_texts,
+            (SELECT ch.chapter || '::' || ch.lang || '::' || ch.content FROM chapter_texts ch WHERE ch.chapter = u.chapter AND ch.lang = ?) AS chapter_texts,
+            (SELECT GROUP_CONCAT(uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content, '|||') FROM unit_color uc JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ? WHERE uc.unit = u._id) AS color_texts,
+            (SELECT GROUP_CONCAT(ut.tag || '::' || tt.lang || '::' || tt.content, '|||') FROM unit_tag ut JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ? WHERE ut.unit = u._id) AS tag_texts,
+            (SELECT GROUP_CONCAT(a.number || '::' || a.zenkai || '::' || a.title || '::' || a.content || '::' || a.ability_type || '::' || att.content, '|||') FROM ability a JOIN ability_type_texts att ON att.ability_type = a.ability_type AND att.lang = ? WHERE a.unit = u._id AND a.lang = ?) AS ability_texts
         FROM unit u
-        LEFT JOIN unit_name un ON un.unit = u._id AND un.lang = ?
-        LEFT JOIN rarity_texts r ON r.rarity = u.rarity AND  r.lang = ?
-        LEFT JOIN type_texts t ON t.type = u.type AND  t.lang = ?
-        LEFT JOIN chapter_texts ch ON ch.chapter = u.chapter AND ch.lang  = ?
-        LEFT JOIN unit_color uc ON uc.unit = u._id
-        LEFT JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ?
-		LEFT JOIN unit_tag ut ON ut.unit = u._id
-		LEFT JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ?
         WHERE u._num = ?
-        GROUP BY u._id
-        ORDER BY u._id DESC
     `,
     findByName: `
         SELECT 
@@ -123,21 +87,14 @@ export const UnitQueries = {
             u.zenkai,
             u.tagswitch,
             u.fusion,
-        GROUP_CONCAT(DISTINCT un.num || '::' || un.lang || '::' || un.content) AS unit_names,
-        GROUP_CONCAT(DISTINCT u.rarity || '::' || r.lang || '::' || r.content) AS rarity_texts,
-        GROUP_CONCAT(DISTINCT u.type || '::' || t.lang || '::' || t.content) AS type_texts,
-        GROUP_CONCAT(DISTINCT u.chapter || '::' || ch.lang || '::' || ch.content) AS chapter_texts,
-        GROUP_CONCAT(DISTINCT uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content) AS color_texts,
-		GROUP_CONCAT(DISTINCT ut.tag || '::' || tt.lang || '::' || tt.content) AS tag_texts
+            (SELECT GROUP_CONCAT(un.num || '::' || un.lang || '::' || un.content, '|||') FROM unit_name un WHERE un.unit = u._id AND un.lang = ?) AS unit_names,
+            (SELECT r.rarity || '::' || r.lang || '::' || r.content FROM rarity_texts r WHERE r.rarity = u.rarity AND r.lang = ?) AS rarity_texts,
+            (SELECT t.type || '::' || t.lang || '::' || t.content FROM type_texts t WHERE t.type = u.type AND t.lang = ?) AS type_texts,
+            (SELECT ch.chapter || '::' || ch.lang || '::' || ch.content FROM chapter_texts ch WHERE ch.chapter = u.chapter AND ch.lang = ?) AS chapter_texts,
+            (SELECT GROUP_CONCAT(uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content, '|||') FROM unit_color uc JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ? WHERE uc.unit = u._id) AS color_texts,
+            (SELECT GROUP_CONCAT(ut.tag || '::' || tt.lang || '::' || tt.content, '|||') FROM unit_tag ut JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ? WHERE ut.unit = u._id) AS tag_texts
         FROM unit u
-        LEFT JOIN unit_name un ON un.unit = u._id
-        LEFT JOIN rarity_texts r ON r.rarity = u.rarity
-        LEFT JOIN type_texts t ON t.type = u.type
-        LEFT JOIN chapter_texts ch ON ch.chapter = u.chapter
-        LEFT JOIN unit_color uc ON uc.unit = u._id
-        LEFT JOIN color_texts ct ON ct.color = uc.color
-        LEFT JOIN unit_tag ut ON ut.unit = u._id
-		LEFT JOIN tag_texts tt ON tt.tag = ut.tag
+        JOIN unit_name un ON un.unit = u._id
         WHERE un.content LIKE '%' || ? || '%'
         GROUP BY u._id
         ORDER BY u._id DESC
