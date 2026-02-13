@@ -23,8 +23,9 @@ export class EquipController {
 
     async getEquipsByUnitID(req: Request, res: Response) {
         const id = String(req.params.id);
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
 
-        const equips = await this.equipService.findAllByUnitID(id);
+        const equips = await this.equipService.findAllByUnitID(id, lang);
         return res.status(200).json(equips);
     }
 

@@ -25,10 +25,10 @@ export class EquipRepo {
         return r.rows[0];
     }
 
-    async findAllByUnitID(id: string) {
+    async findAllByUnitID(id: string, lang: string) {
         const r = await this.db.execute({
             sql: EquipQueries.findAllByUnitID,
-            args: [id]
+            args: [id, lang]
         })
 
         return r.rows

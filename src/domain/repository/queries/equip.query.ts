@@ -52,10 +52,10 @@ WITH
             e._from
         FROM
             equipment_condition ec
-            JOIN unit u ON u._id = 'DBL91-01S'
+            JOIN unit u ON u._id = ?
             LEFT JOIN equipment e ON ec.equipment_id = e._id
             LEFT JOIN equipment_type_texts ett ON e.type = ett.equipment_type
-            AND ett.lang = 'es'
+            AND ett.lang = ?
         GROUP BY
             ec.equipment_id,
             ec.condition_num
