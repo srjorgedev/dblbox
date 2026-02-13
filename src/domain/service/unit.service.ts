@@ -173,9 +173,16 @@ export class UnitService {
             groups[typeName].push(ability);
         }
 
+        // Sort groups by the minimum ability_type.id in each group
+        const sortedGroups = Object.entries(groups).sort(([, aAbilities], [, bAbilities]) => {
+            const aTypeId = aAbilities[0]?.type.id || 0;
+            const bTypeId = bAbilities[0]?.type.id || 0;
+            return aTypeId - bTypeId;
+        });
+
         // Simplify: single item instead of array if length is 1
         const content: Record<string, Ability | Ability[]> = {};
-        for (const [key, value] of Object.entries(groups)) {
+        for (const [key, value] of sortedGroups) {
             content[key] = value.length === 1 ? value[0] : value;
         }
 

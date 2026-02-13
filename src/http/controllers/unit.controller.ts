@@ -10,17 +10,87 @@ export class UnitController {
     }
 
     async createUnit(req: Request, res: Response) {
-        const body = req.body as UnitPOST;
-        const newUnit = await this.unitService.createUnit(body);
-        return res.status(201).json(newUnit);
+        const body = { ...req.body };
+
+        // Parse numeric fields if they are strings (typical in form data)
+        const numericFields = ['num', 'type', 'rarity', 'chapter'];
+        numericFields.forEach(field => {
+            if (body[field] !== undefined && typeof body[field] === 'string') {
+                const val = Number(body[field]);
+                if (!isNaN(val)) body[field] = val;
+            }
+        });
+
+        // Parse boolean fields if they are strings
+        const booleanFields = ['transform', 'lf', 'zenkai', 'tagswitch', 'fusion'];
+        booleanFields.forEach(field => {
+            if (body[field] !== undefined && typeof body[field] === 'string') {
+                body[field] = body[field].toLowerCase() === 'true' || body[field] === '1';
+            }
+        });
+
+        // Parse arrays if they are strings (e.g. "1,2,3")
+        const arrayFields = ['color', 'tags'];
+        arrayFields.forEach(field => {
+            if (body[field] !== undefined) {
+                if (typeof body[field] === 'string') {
+                    body[field] = body[field].split(',').map((item: string) => Number(item.trim())).filter((n: number) => !isNaN(n));
+                } else if (Array.isArray(body[field])) {
+                    body[field] = body[field].map((item: any) => Number(item)).filter((n: number) => !isNaN(n));
+                }
+            }
+        });
+
+        const newUnit = await this.unitService.createUnit(body as UnitPOST);
+        return res.status(201).json({
+            status: "success",
+            statusCode: 201,
+            message: "Unit created successfully"
+        });
     }
 
     async updateUnit(req: Request, res: Response) {
         const id = String(req.params.id);
         const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
-        const body = req.body as UnitUpdate;
-        const updatedUnit = await this.unitService.updateUnit(id, body, lang);
-        return res.status(200).json(updatedUnit);
+        
+        const body = { ...req.body };
+
+        // Parse numeric fields if they are strings (typical in form data)
+        const numericFields = ['num', 'type', 'rarity', 'chapter'];
+        numericFields.forEach(field => {
+            if (body[field] !== undefined && typeof body[field] === 'string') {
+                const val = Number(body[field]);
+                if (!isNaN(val)) body[field] = val;
+            }
+        });
+
+        // Parse boolean fields if they are strings
+        const booleanFields = ['transform', 'lf', 'zenkai', 'tagswitch', 'fusion'];
+        booleanFields.forEach(field => {
+            if (body[field] !== undefined && typeof body[field] === 'string') {
+                body[field] = body[field].toLowerCase() === 'true' || body[field] === '1';
+            }
+        });
+
+        // Parse arrays if they are strings (e.g. "1,2,3")
+        const arrayFields = ['color', 'tags'];
+        arrayFields.forEach(field => {
+            if (body[field] !== undefined) {
+                if (typeof body[field] === 'string') {
+                    body[field] = body[field].split(',').map((item: string) => Number(item.trim())).filter((n: number) => !isNaN(n));
+                } else if (Array.isArray(body[field])) {
+                    body[field] = body[field].map((item: any) => Number(item)).filter((n: number) => !isNaN(n));
+                }
+            }
+        });
+
+        await this.unitService.updateUnit(id, body as UnitUpdate, lang);
+        
+        return res.status(200).json({
+            status: "success",
+            statusCode: 200,
+            message: "Unit updated successfully"
+        });
     }
 
     async getAllUnits(req: Request, res: Response) {

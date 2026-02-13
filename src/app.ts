@@ -13,6 +13,7 @@ async function app() {
 
     const server = e();
     server.use(e.json());
+    server.use(e.urlencoded({ extended: true }));
     server.use(cors());
 
     const dblBoxRouter = initDblBoxModule(conn);
