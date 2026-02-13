@@ -12,6 +12,7 @@ import {
 import createAssetsRoutes from "@/http/routes/assets.routes";
 import createDataRoutes from "@/http/routes/data.routes";
 import createUnitRoutes from "@/http/routes/unit.routes";
+import createEquipRoutes from "./http/routes/equip,routes";
 
 export function initDblBoxModule(db: Client): Router {
     const router = Router();
@@ -46,6 +47,7 @@ export function initDblBoxModule(db: Client): Router {
     // Routes
     router.use("/unit", createUnitRoutes(unitController));
     // router.use("/assets", createAssetsRoutes(assetsController));
+    router.use("/equip", createEquipRoutes(equipController))
     router.use("/data", createDataRoutes(
         chapterController,
         colorController,

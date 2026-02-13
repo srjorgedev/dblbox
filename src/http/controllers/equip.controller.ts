@@ -20,4 +20,19 @@ export class EquipController {
         const equip = await this.equipService.findEquipByID(id, lang);
         return res.status(200).json(equip);
     }
+
+    async getEquipsByUnitID(req: Request, res: Response) {
+        const id = String(req.params.id);
+
+        const equips = await this.equipService.findAllByUnitID(id);
+        return res.status(200).json(equips);
+    }
+
+    async getUnitsByEquipID(req: Request, res: Response) {
+        const id = Number(req.params.id);
+        const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
+
+        const units = await this.equipService.findUnitByEquipID(id, lang)
+        return res.status(200).json(units)
+    }
 }

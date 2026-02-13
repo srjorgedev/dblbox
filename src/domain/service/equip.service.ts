@@ -17,4 +17,16 @@ export class EquipService {
         if (!equip) throw new AppError(`Equipment with ID ${id} not found`, 404);
         return equip;
     }
+
+    async findAllByUnitID(id: string) {
+        const equips = await this.equipRepo.findAllByUnitID(id)
+        if (!equips) throw new AppError("Error getting equips", 404)
+        return equips
+    }
+
+    async findUnitByEquipID(id: number, lang: string) {
+        const units = await this.equipRepo.findUnitsByEquipID(id, lang)
+        if (!units) throw new AppError("Error getting equips", 404)
+        return units
+    }
 }
