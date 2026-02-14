@@ -1,3 +1,4 @@
+export * from "./ranking.controller";
 export * from "./assets.controller";
 export * from "./chapter.controller";
 export * from "./color.controller";

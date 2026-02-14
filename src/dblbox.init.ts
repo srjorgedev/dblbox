@@ -1,18 +1,19 @@
 import { Router } from "express";
 import { Client } from "@libsql/client";
 import {
-    AssetsRepo, ChapterRepo, ColorRepo, EquipRepo, RarityRepo, TagRepo, TypeRepo, UnitRepo
+    AssetsRepo, ChapterRepo, ColorRepo, EquipRepo, RarityRepo, TagRepo, TypeRepo, UnitRepo, RankingRepo
 } from "@/domain/repository";
 import {
-    AssetsService, ChapterService, ColorService, EquipService, RarityService, TagService, TypeService, UnitService
+    AssetsService, ChapterService, ColorService, EquipService, RarityService, TagService, TypeService, UnitService, RankingService
 } from "@/domain/service";
 import {
-    AssetsController, ChapterController, ColorController, EquipController, RarityController, TagController, TypeController, UnitController
+    AssetsController, ChapterController, ColorController, EquipController, RarityController, TagController, TypeController, UnitController, RankingController
 } from "@/http/controllers";
 import createAssetsRoutes from "@/http/routes/assets.routes";
 import createDataRoutes from "@/http/routes/data.routes";
 import createUnitRoutes from "@/http/routes/unit.routes";
 import createEquipRoutes from "./http/routes/equip,routes";
+import createRankingRoutes from "./http/routes/ranking.routes";
 
 export function initDblBoxModule(db: Client): Router {
     const router = Router();
@@ -25,6 +26,7 @@ export function initDblBoxModule(db: Client): Router {
     const typeRepo = new TypeRepo(db);
     const equipRepo = new EquipRepo(db);
     const tagRepo = new TagRepo(db);
+    const rankingRepo = new RankingRepo(db);
 
     const unitService = new UnitService(unitRepo);
     const assetsService = new AssetsService(assetsRepo);
@@ -34,6 +36,7 @@ export function initDblBoxModule(db: Client): Router {
     const typeService = new TypeService(typeRepo);
     const equipService = new EquipService(equipRepo);
     const tagService = new TagService(tagRepo);
+    const rankingService = new RankingService(rankingRepo);
 
     const unitController = new UnitController(unitService);
     const assetsController = new AssetsController(assetsService);
@@ -43,11 +46,13 @@ export function initDblBoxModule(db: Client): Router {
     const typeController = new TypeController(typeService);
     const equipController = new EquipController(equipService);
     const tagController = new TagController(tagService);
+    const rankingController = new RankingController(rankingService);
 
     // Routes
     router.use("/unit", createUnitRoutes(unitController));
     // router.use("/assets", createAssetsRoutes(assetsController));
     router.use("/equip", createEquipRoutes(equipController))
+    router.use("/ranking", createRankingRoutes(rankingController));
     router.use("/data", createDataRoutes(
         chapterController,
         colorController,

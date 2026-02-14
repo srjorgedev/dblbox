@@ -1,3 +1,4 @@
+export * from "./ranking.repo";
 export * from "./assets.repo";
 export * from "./chapter.repo";
 export * from "./color.repo";

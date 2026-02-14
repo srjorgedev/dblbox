@@ -1,3 +1,4 @@
+export * from "./ranking.service";
 export * from "./assets.service";
 export * from "./chapter.service";
 export * from "./color.service";
