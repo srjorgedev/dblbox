@@ -1,17 +1,27 @@
+import type { Client, ResultSet } from "@libsql/client";
 import { QUnits } from "../../db/queries/unit.queries";
-import type { TRUnit } from "../../models/unit.type";
 import { log } from "../../utils/log";
-import type IRepository from "./repo.interface"
-import type { Client, ResultSet } from "@libsql/client"
 
-export class UnitRepo implements IRepository<TRUnit> {
+type UnitReq = {
+    id: string;
+    num: number;
+    type: number;
+    chapter: number;
+    rarity: number;
+    lf: boolean;
+    transform: boolean;
+    tagswitch: boolean;
+    zenkai: boolean;
+}
+
+export class UnitRepo {
     private readonly conn: Client;
 
     constructor(conn: Client) {
         this.conn = conn;
     }
 
-    async readAll(): Promise<ResultSet> {
+    async findAll(): Promise<ResultSet> {
         try {
             const query: string = QUnits.ReadAll;
             return await this.conn.execute(query);
@@ -21,7 +31,7 @@ export class UnitRepo implements IRepository<TRUnit> {
         }
     }
 
-    async readAllWithPages(limit: number, offset: number): Promise<ResultSet> {
+    async findAllWithPages(limit: number, offset: number): Promise<ResultSet> {
         try {
             const query: string = QUnits.ReadAllWithPages;
             return await this.conn.execute(query, [limit, offset]);
@@ -31,7 +41,7 @@ export class UnitRepo implements IRepository<TRUnit> {
         }
     }
 
-    async readAllSummariesWithPages(limit: number, offset: number): Promise<ResultSet> {
+    async findSummariesWithPages(limit: number, offset: number): Promise<ResultSet> {
         try {
             const query: string = QUnits.ReadAllSummaryWithPages;
             return await this.conn.execute(query, [limit, offset]);
@@ -41,7 +51,7 @@ export class UnitRepo implements IRepository<TRUnit> {
         }
     }
 
-    async readByID(id: string): Promise<ResultSet> {
+    async findByID(id: string): Promise<ResultSet> {
         try {
             const query: string = QUnits.ReadByID;
             return await this.conn.execute(query, [id]);
@@ -51,7 +61,7 @@ export class UnitRepo implements IRepository<TRUnit> {
         }
     }
 
-    async readByNUM(num: number): Promise<ResultSet> {
+    async findByNum(num: number): Promise<ResultSet> {
         try {
             const query: string = QUnits.ReadByNUM;
             return await this.conn.execute(query, [num]);
@@ -61,7 +71,7 @@ export class UnitRepo implements IRepository<TRUnit> {
         }
     }
 
-    async readCount(): Promise<ResultSet> {
+    async findTotal(): Promise<ResultSet> {
         try {
             const query: string = QUnits.ReadTotal;
             return await this.conn.execute(query);
@@ -71,10 +81,31 @@ export class UnitRepo implements IRepository<TRUnit> {
         }
     }
 
-    async create(unit: TRUnit): Promise<ResultSet> {
+    async findByName(name: string): Promise<ResultSet> {
+        try {
+            const query: string = QUnits.ReadByName
+            return await this.conn.execute(query, [name])
+        } catch (error) {
+            log("[UNIT REPO]: FindByName Error -> " + error)
+            throw error
+        }
+    }
+
+    async create(unit: UnitReq): Promise<ResultSet> {
         try {
             const query: string = `INSERT INTO unit (_id, _num, type, chapter, rarity, lf, transform, tagswitch, zenkai) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
             return this.conn.execute(query, [unit.id, unit.num, unit.type, unit.chapter, unit.rarity, unit.lf, unit.transform, unit.tagswitch, unit.zenkai]);
+        } catch (error) {
+            log("[UNIT REPO]: Create Error -> " + error)
+            throw error;
+        }
+    }
+
+    async addTags(_id: string, tags: number) {
+        try {
+            const query: string = `INSERT INTO unit_tag (unit, tag) VALUES(?, ?)`;
+            const r = await this.conn.execute(query, [_id, tags]);
+            return r.rowsAffected
         } catch (error) {
             log("[UNIT REPO]: Create Error -> " + error)
             throw error;

@@ -1,6 +1,6 @@
 PRAGMA foreign_keys = ON;
 
-CREATE TABLE ability (
+CREATE TABLE IF NOT EXISTS ability (
     number INTEGER NOT NULL,
     lang TEXT NOT NULL,
     title TEXT NOT NULL,
@@ -13,16 +13,16 @@ CREATE TABLE ability (
 	FOREIGN KEY (ability_type) REFERENCES ability_type (_id)
 );
 
-CREATE TABLE ability_type (
+CREATE TABLE IF NOT EXISTS ability_type (
     _id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL
 );
 
-CREATE TABLE chapter (
+CREATE TABLE IF NOT EXISTS chapter (
     _id INTEGER PRIMARY KEY AUTOINCREMENT
 );
 
-CREATE TABLE chapter_texts(
+CREATE TABLE IF NOT EXISTS chapter_texts(
     chapter int,
 	lang text,
 	content text,
@@ -31,11 +31,11 @@ CREATE TABLE chapter_texts(
 	FOREIGN KEY (lang) REFERENCES lang(_code)
 );
 
-CREATE TABLE color (
+CREATE TABLE IF NOT EXISTS color (
     _id INTEGER PRIMARY KEY AUTOINCREMENT
 );
 
-CREATE TABLE color_texts(
+CREATE TABLE IF NOT EXISTS color_texts(
     color int,
 	lang text,
 	content text,
@@ -44,16 +44,16 @@ CREATE TABLE color_texts(
 	FOREIGN KEY (lang) REFERENCES lang(_code)
 );
 
-CREATE TABLE lang (
+CREATE TABLE IF NOT EXISTS lang (
     _code TEXT PRIMARY KEY,
     name TEXT NOT NULL
 );
 
-CREATE TABLE rarity (
+CREATE TABLE IF NOT EXISTS rarity (
     _id INTEGER PRIMARY KEY AUTOINCREMENT
 );
 
-CREATE TABLE rarity_texts(
+CREATE TABLE IF NOT EXISTS rarity_texts(
     rarity int,
 	lang text,
 	content text,
@@ -62,11 +62,11 @@ CREATE TABLE rarity_texts(
 	FOREIGN KEY (lang) REFERENCES lang(_code)
 );
 
-CREATE TABLE tag (
+CREATE TABLE IF NOT EXISTS tag (
     _id INTEGER PRIMARY KEY AUTOINCREMENT
 );
 
-CREATE TABLE tag_texts(
+CREATE TABLE IF NOT EXISTS tag_texts(
     tag int,
 	lang text,
 	content text,
@@ -75,11 +75,11 @@ CREATE TABLE tag_texts(
 	FOREIGN KEY (lang) REFERENCES lang(_code)
 );
 
-CREATE TABLE type (
+CREATE TABLE IF NOT EXISTS type (
     _id INTEGER PRIMARY KEY AUTOINCREMENT
 );
 
-CREATE TABLE type_texts(
+CREATE TABLE IF NOT EXISTS type_texts(
     type int,
 	lang text,
 	content text,
@@ -88,7 +88,7 @@ CREATE TABLE type_texts(
 	FOREIGN KEY (lang) REFERENCES lang(_code)
 );
 
-CREATE TABLE unit (
+CREATE TABLE IF NOT EXISTS unit (
     _id TEXT PRIMARY KEY,
     _num INTEGER,
     type INTEGER,
@@ -101,7 +101,7 @@ CREATE TABLE unit (
 	FOREIGN KEY (rarity) REFERENCES rarity (_id) 
 );
 
-CREATE TABLE unit_color (
+CREATE TABLE IF NOT EXISTS unit_color (
     number INTEGER NOT NULL,
     unit TEXT NOT NULL,
     color INTEGER NOT NULL,
@@ -110,7 +110,7 @@ CREATE TABLE unit_color (
     FOREIGN KEY (color) REFERENCES color(_id)
 );
 
-CREATE TABLE unit_name (
+CREATE TABLE IF NOT EXISTS unit_name (
 	num INTEGER NOT NULL,
 	unit TEXT NOT NULL,
 	lang TEXT NOT NULL,
@@ -120,10 +120,58 @@ CREATE TABLE unit_name (
 	FOREIGN KEY (lang) REFERENCES lang(_code)
 );
 
-CREATE TABLE unit_tag (
+CREATE TABLE IF NOT EXISTS unit_tag (
     unit TEXT,
     tag INTEGER,
     PRIMARY KEY (unit, tag),
     FOREIGN KEY (unit) REFERENCES unit (_id),
     FOREIGN KEY (tag) REFERENCES tag (_id)
+);
+
+CREATE TABLE IF NOT EXISTS equipment_type();
+
+CREATE TABLE equipment (
+	_id INTEGER PRIMARY KEY NOT NULL,
+	type INTEGER NOT NULL,
+	is_awaken BOOLEAN NOT NULL,
+	awaken_from INTEGER NOT NULL,
+	FOREIGN KEY (type) REFERENCES type(_id),
+	FOREIGN KEY (awaken_from) REFERENCES equipment(_id)
+);
+
+CREATE TABLE IF NOT EXISTS equipment_texts (
+	_id INTEGER NOT NULL,
+	lang TEXT NOT NULL,
+	title TEXT NOT NULL,
+	PRIMARY KEY (_id, lang),
+	FOREIGN KEY (_id) REFERENCES equipment(_id),
+	FOREIGN KEY (lang) REFERENCES lang(_code)
+);
+
+CREATE TABLE IF NOT EXISTS equipment_condition (
+    _id INTEGER PRIMARY KEY AUTOINCREMENT,
+    equipment_id INTEGER NOT NULL,
+    unit_id TEXT NULL, 
+    tag_id INTEGER NULL,
+    type_id INTEGER NULL,
+    rarity_id INTEGER NULL,
+    chapter_id INTEGER NULL,
+    color_id INTEGER NULL,
+    FOREIGN KEY (equipment_id) REFERENCES equipment(_id),
+    FOREIGN KEY (unit_id) REFERENCES unit(_id),
+    FOREIGN KEY (tag_id) REFERENCES tag(_id),
+    FOREIGN KEY (type_id) REFERENCES type(_id),
+    FOREIGN KEY (rarity_id) REFERENCES rarity(_id),
+    FOREIGN KEY (chapter_id) REFERENCES chapter(_id),
+    FOREIGN KEY (color_id) REFERENCES color(_id)
+);
+
+CREATE TABLE IF NOT EXISTS equipment_effect (
+	equipment_id INTEGER NOT NULL,
+	slot_num INTEGER NOT NULL,
+	slot_type INTEGER NOT NULL,
+	slot_effect TEXT NOT NULL,
+	effect_num INTEGER NOT NULL,
+	PRIMARY KEY (equipment_id, slot_num, effect_num),
+	FOREIGN KEY (equipment_id) REFERENCES equipment(_id)
 );

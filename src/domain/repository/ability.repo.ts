@@ -35,7 +35,7 @@ export class AbilityRepo implements IRepository<TRAbility> {
     }
 
     create(ability: TRAbility): Promise<ResultSet> {
-        const query: string = `INSERT INTO ability (number, ability_type, unit, lang, title, content) VALUES (?, ?, ?, ?, ?, ?)`;
-        return this.conn.execute(query, [ability.number, ability.ability_type, ability.unit, ability.lang, ability.title, ability.content]);
+        const query: string = `INSERT INTO ability (number, ability_type, unit, lang, title, content, zenkai) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        return this.conn.execute(query, [ability.number, ability.ability_type, ability.unit, ability.lang, ability.title, ability.content, ability.zenkai]);
     }
 }

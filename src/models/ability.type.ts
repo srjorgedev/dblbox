@@ -14,6 +14,7 @@ export type TRAbility = {
     content: string;
     ability_type: number;
     unit: string;
+    zenkai: boolean;
 }
 
 

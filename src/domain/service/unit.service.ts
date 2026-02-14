@@ -60,7 +60,7 @@ export class UnitService {
     async findAll(): Promise<any> {
         try {
             return await getOrSetCache("units:all", async () => {
-                const data = await this.unitRepo.readAll();
+                const data = await this.unitRepo.findAll();
                 return data.rows.map(row => MapUnit(row));
             }, 86400);
         } catch (error) {
@@ -70,7 +70,7 @@ export class UnitService {
 
     async count(): Promise<number> {
         try {
-            const data = await this.unitRepo.readCount();
+            const data = await this.unitRepo.findTotal();
             return Number(data.rows[0]["total"])
         } catch (error) {
             throw error;
@@ -83,7 +83,7 @@ export class UnitService {
             const cacheKey = `units:page:${page}:limit:${limit}`;
 
             return await getOrSetCache(cacheKey, async () => {
-                const data = await this.unitRepo.readAllWithPages(limit, offset);
+                const data = await this.unitRepo.findAllWithPages(limit, offset);
                 return data.rows.map(row => MapUnit(row));
             }, 86400);
         } catch (error) {
@@ -94,7 +94,7 @@ export class UnitService {
     async findAllSummariesWithPages(page: number, limit: number): Promise<TSUnit[]> {
         try {
             const offset: number = (page - 1) * limit;
-            const data = await this.unitRepo.readAllWithPages(limit, offset);
+            const data = await this.unitRepo.findAllWithPages(limit, offset);
 
             const units: TSUnit[] = data.rows.map(row => MapUnit(row))
 
@@ -106,7 +106,7 @@ export class UnitService {
 
     async findByID(id: string): Promise<TSUnit> {
         try {
-            const data = await this.unitRepo.readByID(id);
+            const data = await this.unitRepo.findByID(id);
             if (data.rows.length === 0) {
                 throw new Error("Unit not found");
             }
@@ -138,7 +138,7 @@ export class UnitService {
 
     async findByNUM(num: number): Promise<TSUnit> {
         try {
-            const data = await this.unitRepo.readByNUM(num);
+            const data = await this.unitRepo.findByNum(num);
             if (data.rows.length === 0) {
                 throw new Error("Unit not found");
             }

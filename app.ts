@@ -36,7 +36,7 @@ function main() {
     log(`[MAIN]: url -> ${url}  token -> ${token}`)
 
     // Database connection declaration
-    const Conn = new Database(url, token).getConnection()
+    const Conn = new Database().getConnection()
 
     // Controllers, Repositories & Services declaration  
     const cUnit = new UnitController(new UnitService(new UnitRepo(Conn)))
