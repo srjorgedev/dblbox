@@ -9,7 +9,8 @@ export class AssetsController {
     }
 
     async getImage(req: Request, res: Response) {
-        const { folder, fileName } = req.params;
+        const folder = String(req.params.folder);
+        const fileName = String(req.params.fileName);
         const file = `${folder}/${fileName}`;
 
         const filePath = await this.assetService.readAsset(file);

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+﻿import { Request, Response } from "express";
 import { RankingService } from "@/domain/service/ranking.service";
 
 export class RankingController {
@@ -77,7 +77,8 @@ export class RankingController {
   }
 
   async getUnitRank(req: Request, res: Response) {
-    const { groupId, unitId } = req.params;
+    const groupId = String(req.params.groupId);
+    const unitId = String(req.params.unitId);
     const date = req.query.date as string | undefined;
 
     if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
@@ -94,7 +95,9 @@ export class RankingController {
   }
 
   async getUserLastVoteForUnit(req: Request, res: Response) {
-    const { groupId, userId, unitId } = req.params;
+    const groupId = String(req.params.groupId);
+    const userId = String(req.params.userId);
+    const unitId = String(req.params.unitId);
 
     const data = await this.rankingService.getUserLastVoteForUnit({
       rankingGroupId: groupId,
@@ -106,7 +109,7 @@ export class RankingController {
   }
 
   async getUserLastVote(req: Request, res: Response) {
-    const { userId } = req.params;
+    const userId = String(req.params.userId);
     const groupId = req.query.groupId as string | undefined;
 
     const data = await this.rankingService.getUserLastVote({
