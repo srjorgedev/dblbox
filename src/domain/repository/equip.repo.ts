@@ -1,12 +1,22 @@
 import { Client } from "@libsql/client";
 import { EquipQueries } from "@/domain/repository/queries/equip.query";
 
-type RawEquip = {
+type RawBasicEquip = {
     _id: number;
     type: string;
     is_awaken: number;
     is_top: number;
     _from: number | null;
+}
+
+type RawCompleteEquip = {
+    _id: number;
+    type: string;
+    is_awaken: number;
+    is_top: number;
+    _from: number | null;
+    conditions_list: string;
+    effects_list: string;
 }
 
 export class EquipRepo {
@@ -16,21 +26,21 @@ export class EquipRepo {
         this.db = db;
     }
 
-    async findAll(lang: string): Promise<RawEquip[]> {
+    async findAll(lang: string): Promise<RawBasicEquip[]> {
         const r = await this.db.execute({
             sql: EquipQueries.findAll,
             args: [lang]
         });
-        return r.rows as unknown as RawEquip[];
+        return r.rows as unknown as RawBasicEquip[];
     }
 
-    async findByID(id: number, lang: string) {
+    async findByID(id: number, lang: string): Promise<RawCompleteEquip> {
         const r = await this.db.execute({
             sql: EquipQueries.findByID,
-            args: [lang, lang, lang, lang, lang, lang, id]
+            args: [lang, lang, lang, lang, lang, lang, lang, id]
         });
 
-        return r.rows[0];
+        return r.rows[0] as unknown as RawCompleteEquip;
     }
 
     async findAllByUnitID(id: string, lang: string) {
@@ -39,7 +49,7 @@ export class EquipRepo {
             args: [id, lang]
         })
 
-        return r.rows
+        return r.rows as unknown as RawBasicEquip[];
     }
 
     async findUnitsByEquipID(id: number, lang: string) {
