@@ -206,5 +206,100 @@ export const RankQueries = {
     FROM ranking_daily_snapshot
     WHERE ranking_group_id = ? AND date = ?
     LIMIT 1;
+  `,
+
+  ComputeLiveTopRankingRows: `
+    WITH window_votes AS (
+      SELECT *
+      FROM ranking_vote
+      WHERE ranking_group_id = ?
+        AND date >= date(?, '-' || (? - 1) || ' days')
+        AND date <= date(?)
+    ),
+    latest_per_user_unit AS (
+      SELECT
+        user_id,
+        ranking_group_id,
+        unit_id,
+        MAX(date) AS latest_date
+      FROM window_votes
+      GROUP BY user_id, ranking_group_id, unit_id
+    ),
+    effective_votes AS (
+      SELECT v.*
+      FROM window_votes v
+      JOIN latest_per_user_unit l
+        ON l.user_id = v.user_id
+       AND l.ranking_group_id = v.ranking_group_id
+       AND l.unit_id = v.unit_id
+       AND l.latest_date = v.date
+    ),
+    ranked AS (
+      SELECT
+        unit_id,
+        AVG(rank_position) AS avg_rank,
+        COUNT(*) AS votes_count
+      FROM effective_votes
+      GROUP BY unit_id
+    )
+    SELECT
+      unit_id,
+      avg_rank,
+      votes_count
+    FROM ranked
+    ORDER BY avg_rank ASC, votes_count DESC
+    LIMIT ?;
+  `,
+
+  ComputeLiveUnitRankRow: `
+    WITH window_votes AS (
+      SELECT *
+      FROM ranking_vote
+      WHERE ranking_group_id = ?
+        AND date >= date(?, '-' || (? - 1) || ' days')
+        AND date <= date(?)
+    ),
+    latest_per_user_unit AS (
+      SELECT
+        user_id,
+        ranking_group_id,
+        unit_id,
+        MAX(date) AS latest_date
+      FROM window_votes
+      GROUP BY user_id, ranking_group_id, unit_id
+    ),
+    effective_votes AS (
+      SELECT v.*
+      FROM window_votes v
+      JOIN latest_per_user_unit l
+        ON l.user_id = v.user_id
+       AND l.ranking_group_id = v.ranking_group_id
+       AND l.unit_id = v.unit_id
+       AND l.latest_date = v.date
+    ),
+    ranked AS (
+      SELECT
+        unit_id,
+        AVG(rank_position) AS avg_rank,
+        COUNT(*) AS votes_count
+      FROM effective_votes
+      GROUP BY unit_id
+    ),
+    ranked_with_positions AS (
+      SELECT
+        unit_id,
+        avg_rank,
+        votes_count,
+        ROW_NUMBER() OVER (ORDER BY avg_rank ASC, votes_count DESC) AS position
+      FROM ranked
+    )
+    SELECT
+      unit_id,
+      avg_rank,
+      votes_count,
+      position
+    FROM ranked_with_positions
+    WHERE unit_id = ?
+    LIMIT 1;
   `
 };

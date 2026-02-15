@@ -119,4 +119,92 @@ export class RankingController {
 
     return res.status(200).json(data);
   }
+
+  async getLiveRanking(req: Request, res: Response) {
+    const groupId = String(req.params.groupId);
+
+    const date = req.query.date as string | undefined;
+    const windowDays = req.query.windowDays ? Number(req.query.windowDays) : undefined;
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: "Invalid date (YYYY-MM-DD)" });
+    }
+
+    if (windowDays !== undefined && (!Number.isInteger(windowDays) || windowDays < 1 || windowDays > 90)) {
+      return res.status(400).json({ error: "Invalid windowDays" });
+    }
+
+    if (limit !== undefined && (!Number.isInteger(limit) || limit < 1 || limit > 500)) {
+      return res.status(400).json({ error: "Invalid limit" });
+    }
+
+    const data = await this.rankingService.getLiveTopRanking({
+      rankingGroupId: groupId,
+      date,
+      windowDays,
+      limit
+    });
+
+    return res.json(data);
+  }
+
+  async getLiveUnitRank(req: Request, res: Response) {
+    const groupId = String(req.params.groupId);
+    const unitId = String(req.params.unitId);
+
+    const date = req.query.date as string | undefined;
+    const windowDays = req.query.windowDays ? Number(req.query.windowDays) : undefined;
+
+    if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: "Invalid date (YYYY-MM-DD)" });
+    }
+
+    if (windowDays !== undefined && (!Number.isInteger(windowDays) || windowDays < 1 || windowDays > 90)) {
+      return res.status(400).json({ error: "Invalid windowDays" });
+    }
+
+    const data = await this.rankingService.getLiveUnitRank({
+      rankingGroupId: groupId,
+      unitId,
+      date,
+      windowDays
+    });
+
+    return res.json(data);
+  }
+
+  async voteLive(req: Request, res: Response) {
+    const groupId = String(req.params.groupId);
+    const { userId, unitId, rankPosition, date, windowDays } = req.body;
+
+    if (!userId || !unitId) {
+      return res.status(400).json({ error: "Missing userId or unitId" });
+    }
+
+    const rank = Number(rankPosition);
+    if (!Number.isInteger(rank) || rank < 1 || rank > 999) {
+      return res.status(400).json({ error: "Invalid rankPosition" });
+    }
+
+    if (date && date !== null && !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return res.status(400).json({ error: "Invalid date (YYYY-MM-DD)" });
+    }
+
+    const wd = windowDays ? Number(windowDays) : undefined;
+    if (wd !== undefined && (!Number.isInteger(wd) || wd < 1 || wd > 90)) {
+      return res.status(400).json({ error: "Invalid windowDays" });
+    }
+
+    const data = await this.rankingService.voteLiveAndReturnFeedback({
+      rankingGroupId: groupId,
+      userId,
+      unitId,
+      rankPosition: rank,
+      date,
+      windowDays: wd
+    });
+
+    return res.json(data);
+  }
 }

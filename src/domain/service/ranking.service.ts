@@ -273,4 +273,115 @@ export class RankingService {
       updatedAt: row.updated_at
     };
   }
+
+  async getLiveTopRanking(params: {
+    rankingGroupId: string;
+    date?: string;
+    windowDays?: number;
+    limit?: number;
+  }) {
+    const date = params.date ?? this.getTodayUTCDateString();
+    const windowDays = params.windowDays ?? 14;
+    const limit = params.limit ?? 100;
+
+    const rows = await this.rankingRepo.getLiveTopRankingRows({
+      rankingGroupId: params.rankingGroupId,
+      date,
+      windowDays,
+      limit
+    });
+
+    return {
+      rankingGroupId: params.rankingGroupId,
+      date,
+      windowDays,
+      items: rows.map((r, idx) => ({
+        position: idx + 1,
+        unitId: r.unit_id,
+        avgRank: r.avg_rank,
+        votesCount: r.votes_count
+      }))
+    };
+  }
+
+  async getLiveUnitRank(params: {
+    rankingGroupId: string;
+    unitId: string;
+    date?: string;
+    windowDays?: number;
+  }) {
+    const date = params.date ?? this.getTodayUTCDateString();
+    const windowDays = params.windowDays ?? 14;
+
+    const row = await this.rankingRepo.getLiveUnitRankRow({
+      rankingGroupId: params.rankingGroupId,
+      date,
+      windowDays,
+      unitId: params.unitId
+    });
+
+    if (!row) {
+      return {
+        rankingGroupId: params.rankingGroupId,
+        unitId: params.unitId,
+        date,
+        windowDays,
+        position: null
+      };
+    }
+
+    return {
+      rankingGroupId: params.rankingGroupId,
+      unitId: row.unit_id,
+      date,
+      windowDays,
+      position: row.position,
+      avgRank: row.avg_rank,
+      votesCount: row.votes_count
+    };
+  }
+
+  async voteLiveAndReturnFeedback(params: {
+    rankingGroupId: string;
+    userId: string;
+    unitId: string;
+    rankPosition: number;
+    date?: string;
+    windowDays?: number;
+  }) {
+    const date = params.date ?? this.getTodayUTCDateString();
+    const windowDays = params.windowDays ?? 14;
+
+    // Save vote
+    await this.rankingRepo.upsertVote({
+      userId: params.userId,
+      rankingGroupId: params.rankingGroupId,
+      unitId: params.unitId,
+      date,
+      rankPosition: params.rankPosition
+    });
+
+    // Return immediate rank feedback
+    const liveRank = await this.getLiveUnitRank({
+      rankingGroupId: params.rankingGroupId,
+      unitId: params.unitId,
+      date,
+      windowDays
+    });
+
+    return {
+      ok: true,
+      voteSaved: true,
+      yourLastVote: {
+        unitId: params.unitId,
+        date,
+        rankPosition: params.rankPosition
+      },
+      liveUnitRank: {
+        position: liveRank.position,
+        avgRank: (liveRank as any).avgRank ?? null,
+        votesCount: (liveRank as any).votesCount ?? null
+      }
+    };
+  }
 }

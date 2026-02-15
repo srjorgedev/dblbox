@@ -166,6 +166,45 @@ export class RankingRepo {
     return r.rows[0].window_days as number;
   }
 
+  async getLiveTopRankingRows(params: {
+    rankingGroupId: string;
+    date: string;
+    windowDays: number;
+    limit: number;
+  }): Promise<RankingRow[]> {
+    const r = await this.db.execute({
+      sql: RankQueries.ComputeLiveTopRankingRows,
+      args: [
+        params.rankingGroupId,
+        params.date,
+        params.windowDays,
+        params.date,
+        params.limit
+      ]
+    });
+    return r.rows as unknown as RankingRow[];
+  }
+
+  async getLiveUnitRankRow(params: {
+    rankingGroupId: string;
+    date: string;
+    windowDays: number;
+    unitId: string;
+  }): Promise<{ unit_id: string; avg_rank: number; votes_count: number; position: number } | null> {
+    const r = await this.db.execute({
+      sql: RankQueries.ComputeLiveUnitRankRow,
+      args: [
+        params.rankingGroupId,
+        params.date,
+        params.windowDays,
+        params.date,
+        params.unitId
+      ]
+    });
+    if (r.rows.length === 0) return null;
+    return r.rows[0] as unknown as { unit_id: string; avg_rank: number; votes_count: number; position: number };
+  }
+
   async getVoteDistributionsForUnits(params: {
     rankingGroupId: string;
     unitIds: string[];
