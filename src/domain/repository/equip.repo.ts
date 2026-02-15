@@ -1,6 +1,14 @@
 import { Client } from "@libsql/client";
 import { EquipQueries } from "@/domain/repository/queries/equip.query";
 
+type RawEquip = {
+    _id: number;
+    type: string;
+    is_awaken: number;
+    is_top: number;
+    _from: number | null;
+}
+
 export class EquipRepo {
     private readonly db: Client;
 
@@ -8,12 +16,12 @@ export class EquipRepo {
         this.db = db;
     }
 
-    async findAll(lang: string) {
+    async findAll(lang: string): Promise<RawEquip[]> {
         const r = await this.db.execute({
             sql: EquipQueries.findAll,
             args: [lang]
         });
-        return r.rows;
+        return r.rows as unknown as RawEquip[];
     }
 
     async findByID(id: number, lang: string) {
