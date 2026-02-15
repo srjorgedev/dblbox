@@ -20,7 +20,7 @@ export const EquipQueries = {
             COALESCE('type'    || '::' || ec.type_id   || '::' || ty.content || ',', '') ||
             COALESCE('rarity'  || '::' || ec.rarity_id || '::' || r.content || ',', '') ||
             COALESCE('chapter' || '::' || ec.chapter_id || '::' || c.content || ',', '') ||
-            COALESCE('color'   || '::' || ec.color_id  || '::' || ct.content, ''),
+            COalesce('color'   || '::' || ec.color_id  || '::' || ct.content, ''),
             ','
         ),
         ' | '
