@@ -240,9 +240,11 @@ export class RankingService {
       groupId: row.ranking_group_id,
       userId: row.user_id,
       unitId: row.unit_id,
-      date: row.date,
-      rankPosition: row.rank_position,
-      updatedAt: row.updated_at
+      lastVote: {
+        date: row.date,
+        rankPosition: row.rank_position,
+        updatedAt: row.updated_at
+      }
     };
   }
 
@@ -266,7 +268,7 @@ export class RankingService {
 
     return {
       userId: row.user_id,
-      lastvote: {
+      lastVote: {
         groupId: row.ranking_group_id,
         unitId: row.unit_id,
         date: row.date,
