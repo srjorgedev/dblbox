@@ -121,6 +121,7 @@ export class RankingController {
   }
 
   async getLiveRanking(req: Request, res: Response) {
+    const lang = req.query.lang == undefined ? "en" : req.query.lang as string;
     const groupId = String(req.params.groupId);
 
     const date = req.query.date as string | undefined;
@@ -144,7 +145,7 @@ export class RankingController {
       date,
       windowDays,
       limit
-    });
+    }, lang);
 
     return res.json(data);
   }

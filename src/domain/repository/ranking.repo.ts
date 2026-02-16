@@ -1,5 +1,6 @@
 import { Client } from "@libsql/client";
 import { RankQueries } from "./queries/rank.query";
+import type { RankingItemsRaw, RankingParams, RankingParamsOpt } from "@/types/rank.types";
 
 export interface RankingGroup {
   _id: string;
@@ -144,14 +145,10 @@ export class RankingRepo {
     return r.rows as unknown as SnapshotItem[];
   }
 
-  async getUnitRankFromSnapshot(params: {
-    rankingGroupId: string;
-    snapshotDate: string;
-    unitId: string;
-  }): Promise<SnapshotItem | null> {
+  async getUnitRankFromSnapshot(params: RankingParamsOpt): Promise<SnapshotItem | null> {
     const r = await this.db.execute({
       sql: RankQueries.GetUnitRankFromSnapshot,
-      args: [params.rankingGroupId, params.snapshotDate, params.unitId]
+      args: [params.rankingGroupId!, params.snapshotDate!, params.unitId!]
     });
     if (r.rows.length === 0) return null;
     return r.rows[0] as unknown as SnapshotItem;
@@ -159,30 +156,26 @@ export class RankingRepo {
 
   async getSnapshotWindow(rankingGroupId: string, date: string): Promise<number | null> {
     const r = await this.db.execute({
-        sql: RankQueries.GetSnapshotWindow,
-        args: [rankingGroupId, date]
+      sql: RankQueries.GetSnapshotWindow,
+      args: [rankingGroupId, date]
     });
     if (r.rows.length === 0) return null;
     return r.rows[0].window_days as number;
   }
 
-  async getLiveTopRankingRows(params: {
-    rankingGroupId: string;
-    date: string;
-    windowDays: number;
-    limit: number;
-  }): Promise<RankingRow[]> {
+  async getLiveTopRankingRows(params: RankingParamsOpt, lang: string): Promise<RankingItemsRaw[]> {
     const r = await this.db.execute({
       sql: RankQueries.ComputeLiveTopRankingRows,
       args: [
-        params.rankingGroupId,
-        params.date,
-        params.windowDays,
-        params.date,
-        params.limit
+        params.rankingGroupId!,
+        params.date!,
+        params.windowDays!,
+        params.date!,
+        lang, lang, lang, lang, lang, lang,
+        params.limit!
       ]
     });
-    return r.rows as unknown as RankingRow[];
+    return r.rows as unknown as RankingItemsRaw[];
   }
 
   async getLiveUnitRankRow(params: {
@@ -212,14 +205,14 @@ export class RankingRepo {
     endDate: string;
   }): Promise<{ unit_id: string, vote_positions: string }[]> {
     if (params.unitIds.length === 0) {
-        return [];
+      return [];
     }
     const placeholders = params.unitIds.map(() => '?').join(',');
     const sql = RankQueries.GetVoteDistributionForUnits.replace('<unit_ids>', placeholders);
-    
+
     const r = await this.db.execute({
-        sql,
-        args: [params.rankingGroupId, params.startDate, params.endDate, ...params.unitIds]
+      sql,
+      args: [params.rankingGroupId, params.startDate, params.endDate, ...params.unitIds]
     });
 
     return r.rows as unknown as { unit_id: string, vote_positions: string }[];
@@ -262,6 +255,6 @@ export class RankingRepo {
   }
 
   async executeBatch(statements: { sql: string; args: any[] }[]): Promise<void> {
-      await this.db.batch(statements, "write");
+    await this.db.batch(statements, "write");
   }
 }

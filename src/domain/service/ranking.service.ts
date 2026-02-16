@@ -1,5 +1,6 @@
 import { RankingRepo, RankingVoteParams } from "@/domain/repository/ranking.repo";
 import { RankQueries } from "@/domain/repository/queries/rank.query";
+import { parseUnitData } from "@/utils/unit.parser";
 
 export class RankingService {
   private readonly rankingRepo: RankingRepo;
@@ -33,31 +34,31 @@ export class RankingService {
 
     // Insert new header only if there are rows to prevent empty snapshots
     if (rows.length > 0) {
-        statements.push({
-          sql: RankQueries.InsertSnapshotHeader,
-          args: [params.rankingGroupId, params.date, params.windowDays]
-        });
+      statements.push({
+        sql: RankQueries.InsertSnapshotHeader,
+        args: [params.rankingGroupId, params.date, params.windowDays]
+      });
 
-        // Insert new items
-        rows.forEach((row, index) => {
-          statements.push({
-            sql: RankQueries.InsertSnapshotItem,
-            args: [
-              params.rankingGroupId,
-              params.date,
-              row.unit_id,
-              row.avg_rank, // score
-              row.avg_rank,
-              row.votes_count,
-              index + 1 // position
-            ]
-          });
+      // Insert new items
+      rows.forEach((row, index) => {
+        statements.push({
+          sql: RankQueries.InsertSnapshotItem,
+          args: [
+            params.rankingGroupId,
+            params.date,
+            row.unit_id,
+            row.avg_rank, // score
+            row.avg_rank,
+            row.votes_count,
+            index + 1 // position
+          ]
         });
+      });
     }
-    
+
     // 3. Execute the batch transaction.
     if (statements.length > 2) { // Only run if there's more than just delete statements
-        await this.rankingRepo.executeBatch(statements);
+      await this.rankingRepo.executeBatch(statements);
     }
   }
 
@@ -80,39 +81,39 @@ export class RankingService {
     });
 
     if (items.length === 0) {
-        return {
-            usedSnapshotDate: bestDate,
-            items: []
-        };
+      return {
+        usedSnapshotDate: bestDate,
+        items: []
+      };
     }
 
     const windowDays = await this.rankingRepo.getSnapshotWindow(params.rankingGroupId, bestDate);
     if (!windowDays) {
-        // If no window info, return items without distribution
-        return { usedSnapshotDate: bestDate, items };
+      // If no window info, return items without distribution
+      return { usedSnapshotDate: bestDate, items };
     }
 
     const unitIds = items.map(item => item.unit_id);
     const windowEndDate = bestDate;
     const windowStartDate = new Date(bestDate);
-    windowStartDate.setDate(windowStartDate.getDate() - (windowDays -1));
+    windowStartDate.setDate(windowStartDate.getDate() - (windowDays - 1));
     const startDateString = windowStartDate.toISOString().slice(0, 10);
 
     const distributions = await this.rankingRepo.getVoteDistributionsForUnits({
-        rankingGroupId: params.rankingGroupId,
-        unitIds,
-        startDate: startDateString,
-        endDate: windowEndDate
+      rankingGroupId: params.rankingGroupId,
+      unitIds,
+      startDate: startDateString,
+      endDate: windowEndDate
     });
 
     const distMap = new Map(distributions.map(d => [d.unit_id, d.vote_positions]));
 
     const formattedItems = items.map(item => {
-        const vote_positions = distMap.get(item.unit_id) || null;
-        return {
-            ...item,
-            voteDistribution: this._formatVoteDistribution(vote_positions)
-        }
+      const vote_positions = distMap.get(item.unit_id) || null;
+      return {
+        ...item,
+        voteDistribution: this._formatVoteDistribution(vote_positions)
+      }
     });
 
     return {
@@ -128,16 +129,16 @@ export class RankingService {
     const distribution: Record<string, number> = {};
 
     for (const pos of positions) {
-        if (distribution[pos]) {
-            distribution[pos]++;
-        } else {
-            distribution[pos] = 1;
-        }
+      if (distribution[pos]) {
+        distribution[pos]++;
+      } else {
+        distribution[pos] = 1;
+      }
     }
-    
+
     return Object.entries(distribution)
-        .map(([rank, count]) => ({ top: Number(rank), count: count }))
-        .sort((a, b) => a.top - b.top);
+      .map(([rank, count]) => ({ top: Number(rank), count: count }))
+      .sort((a, b) => a.top - b.top);
   }
 
   getTodayUTCDateString() {
@@ -186,25 +187,24 @@ export class RankingService {
       };
     }
 
-    // On-the-fly distribution calculation
     const windowDays = await this.rankingRepo.getSnapshotWindow(params.rankingGroupId, snapshotDateUsed);
     let voteDistribution: { top: number, count: number }[] = [];
     if (windowDays) {
-        const windowEndDate = snapshotDateUsed;
-        const windowStartDate = new Date(snapshotDateUsed);
-        windowStartDate.setDate(windowStartDate.getDate() - (windowDays - 1));
-        const startDateString = windowStartDate.toISOString().slice(0, 10);
+      const windowEndDate = snapshotDateUsed;
+      const windowStartDate = new Date(snapshotDateUsed);
+      windowStartDate.setDate(windowStartDate.getDate() - (windowDays - 1));
+      const startDateString = windowStartDate.toISOString().slice(0, 10);
 
-        const distributions = await this.rankingRepo.getVoteDistributionsForUnits({
-            rankingGroupId: params.rankingGroupId,
-            unitIds: [params.unitId],
-            startDate: startDateString,
-            endDate: windowEndDate
-        });
-        
-        if (distributions.length > 0) {
-            voteDistribution = this._formatVoteDistribution(distributions[0].vote_positions);
-        }
+      const distributions = await this.rankingRepo.getVoteDistributionsForUnits({
+        rankingGroupId: params.rankingGroupId,
+        unitIds: [params.unitId],
+        startDate: startDateString,
+        endDate: windowEndDate
+      });
+
+      if (distributions.length > 0) {
+        voteDistribution = this._formatVoteDistribution(distributions[0].vote_positions);
+      }
     }
 
     return {
@@ -252,9 +252,9 @@ export class RankingService {
   }) {
     const row = params.rankingGroupId
       ? await this.rankingRepo.getLastVoteForUserInGroup({
-          userId: params.userId,
-          rankingGroupId: params.rankingGroupId
-        })
+        userId: params.userId,
+        rankingGroupId: params.rankingGroupId
+      })
       : await this.rankingRepo.getLastVoteForUser({ userId: params.userId });
 
     if (!row) {
@@ -266,11 +266,13 @@ export class RankingService {
 
     return {
       userId: row.user_id,
-      groupId: row.ranking_group_id,
-      unitId: row.unit_id,
-      date: row.date,
-      rankPosition: row.rank_position,
-      updatedAt: row.updated_at
+      lastvote: {
+        groupId: row.ranking_group_id,
+        unitId: row.unit_id,
+        date: row.date,
+        rankPosition: row.rank_position,
+        updatedAt: row.updated_at
+      }
     };
   }
 
@@ -279,7 +281,7 @@ export class RankingService {
     date?: string;
     windowDays?: number;
     limit?: number;
-  }) {
+  }, lang: string) {
     const date = params.date ?? this.getTodayUTCDateString();
     const windowDays = params.windowDays ?? 14;
     const limit = params.limit ?? 100;
@@ -288,19 +290,25 @@ export class RankingService {
       rankingGroupId: params.rankingGroupId,
       date,
       windowDays,
-      limit
-    });
+      limit,
+    }, lang);
+
+    const items = rows.map((row, idx) => {
+      const unit = parseUnitData({ unit_id: row.unit_id, chapter_texts: row.chapter_texts, color_texts: row.color_texts, fusion: row.fusion, lf: row.lf, rarity_texts: row.rarity_texts, tag_texts: row.tag_texts, tagswitch: row.tagswitch, transform: row.transform, type_texts: row.type_texts, unit_names: row.unit_names, unit_num: row.unit_num, zenkai: row.zenkai })
+
+      return {
+        position: idx + 1,
+        avgRank: row.avg_rank,
+        votesCount: row.votes_count,
+        unit
+      }
+    })
 
     return {
       rankingGroupId: params.rankingGroupId,
       date,
       windowDays,
-      items: rows.map((r, idx) => ({
-        position: idx + 1,
-        unitId: r.unit_id,
-        avgRank: r.avg_rank,
-        votesCount: r.votes_count
-      }))
+      items
     };
   }
 
