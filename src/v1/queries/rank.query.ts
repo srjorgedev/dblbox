@@ -1,340 +1,283 @@
+// v1/queries/rank.query.ts
+
+const GROUP_JSON = `
+json_object(
+    '_id', rg._id,
+    'type', rg.type,
+    'is_active', iif(rg.is_active = 1, json('true'), json('false')),
+    'title', rgt.title,
+    'description', rgt.description
+) data
+`;  // ← SIEMPRE "as data" al final
+
+const REALTIME_JSON = `
+json_object(
+    'position', r.current_position,
+    'unit_id', r.unit_id,
+    'score', r.score,
+    'avg_rank', round(r.avg_rank, 2),
+    'votes', r.votes_count,
+    'trend', r.trending_direction,
+    'hourly_votes', r.hourly_votes,
+    'last_vote', r.last_vote_at,
+    'unit_name', (
+        SELECT un.content 
+        FROM unit_name un 
+        WHERE un.unit = r.unit_id AND un.lang = ? 
+        LIMIT 1
+    )
+) data
+`;
+
+const SNAPSHOT_JSON = `
+json_object(
+    'date', s.date,
+    'generated_at', s.generated_at,
+    'window_days', s.window_days,
+    'total_votes', s.total_votes,
+    'total_units', s.total_units
+) data
+`;
+
+const SNAPSHOT_ITEM_JSON = `
+json_object(
+    'position', i.position,
+    'unit_id', i.unit_id,
+    'score', i.score,
+    'avg_rank', round(i.avg_rank, 2),
+    'votes', i.votes_count,
+    'change', i.position_change,
+    'unit_name', (
+        SELECT un.content 
+        FROM unit_name un 
+        WHERE un.unit = i.unit_id AND un.lang = ? 
+        LIMIT 1
+    )
+) data
+`;
+
+const VOTE_JSON = `
+json_object(
+    'user_id', user_id,
+    'group_id', ranking_group_id,
+    'unit_id', unit_id,
+    'position', rank_position,
+    'date', date,
+    'created_at', created_at
+) data
+`;
+
 export const RankQueries = {
-  GetGroups: `
-    SELECT
-      rg._id,
-      rgt.title,
-      rgt.description
-    FROM ranking_group rg
-    JOIN ranking_group_text rgt
-      ON rgt.ranking_group_id = rg._id
-    WHERE rgt.lang = ?
-    ORDER BY rg._id;
-  `,
+  // ==========================================
+  // GRUPOS
+  // ==========================================
 
-  UpsertVote: `
-    INSERT INTO ranking_vote (
-      user_id, ranking_group_id, unit_id,
-      date, rank_position,
-      created_at, updated_at
-    )
-    VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-    ON CONFLICT(user_id, ranking_group_id, unit_id, date)
-    DO UPDATE SET
-      rank_position = excluded.rank_position,
-      updated_at = datetime('now');
-  `,
+  getGroups: `
+        SELECT ${GROUP_JSON}
+        FROM ranking_group rg
+        LEFT JOIN ranking_group_text rgt 
+            ON rgt.ranking_group_id = rg._id 
+            AND rgt.lang = ?
+        WHERE rg.is_active = 1
+        ORDER BY rg._id;
+    `,
 
-  ComputeRankingRows: `
-    WITH window_votes AS (
-      SELECT *
-      FROM ranking_vote
-      WHERE ranking_group_id = ?
-        AND date >= date(?, '-' || (? - 1) || ' days')
-        AND date <= date(?)
-    ),
-    latest_per_user_unit AS (
-      SELECT
-        user_id,
-        ranking_group_id,
-        unit_id,
-        MAX(date) AS latest_date
-      FROM window_votes
-      GROUP BY user_id, ranking_group_id, unit_id
-    ),
-    effective_votes AS (
-      SELECT v.*
-      FROM window_votes v
-      JOIN latest_per_user_unit l
-        ON l.user_id = v.user_id
-       AND l.ranking_group_id = v.ranking_group_id
-       AND l.unit_id = v.unit_id
-       AND l.latest_date = v.date
-    )
-    SELECT 
-    unit_id,
-    AVG(rank_position) AS R,
-    COUNT(*) AS v,
-    ( (COUNT(*) * AVG(rank_position)) + (10 * (SELECT AVG(rank_position) FROM effective_votes)) ) 
-    / (COUNT(*) + 10) AS bayesian_rank
-    FROM effective_votes
-    GROUP BY unit_id
-    ORDER BY bayesian_rank ASC;
-  `,
+  getGroupByID: `
+        SELECT 
+            json_object(
+                '_id', rg._id,
+                'type', rg.type,
+                'is_active', iif(rg.is_active = 1, json('true'), json('false')),
+                'config', json(rg.config),
+                'texts', (
+                    SELECT json_group_array(
+                        json_object(
+                            'lang', rgt.lang,
+                            'title', rgt.title,
+                            'description', rgt.description
+                        )
+                    )
+                    FROM ranking_group_text rgt
+                    WHERE rgt.ranking_group_id = rg._id
+                )
+            ) data
+        FROM ranking_group rg
+        WHERE rg._id = ?;
+    `,
 
-  DeleteSnapshotItems: `
-    DELETE FROM ranking_daily_snapshot_item
-    WHERE ranking_group_id = ? AND date = ?;
-  `,
+  // ==========================================
+  // VOTOS
+  // ==========================================
 
-  DeleteSnapshotHeader: `
-    DELETE FROM ranking_daily_snapshot
-    WHERE ranking_group_id = ? AND date = ?;
-  `,
+  insertVote: `
+        INSERT INTO ranking_vote (
+            user_id, ranking_group_id, unit_id, date, rank_position
+        ) VALUES (?, ?, ?, date('now'), ?)
+        RETURNING ${VOTE_JSON};
+    `,
 
-  InsertSnapshotHeader: `
-    INSERT INTO ranking_daily_snapshot (ranking_group_id, date, window_days)
-    VALUES (?, ?, ?);
-  `,
+  updateVote: `
+        UPDATE ranking_vote 
+        SET rank_position = ?, updated_at = datetime('now')
+        WHERE user_id = ? AND ranking_group_id = ? 
+            AND unit_id = ? AND date = date('now')
+        RETURNING ${VOTE_JSON};
+    `,
 
-  InsertSnapshotItem: `
-    INSERT INTO ranking_daily_snapshot_item (
-      ranking_group_id, date, unit_id,
-      score, avg_rank, votes_count,
-      position
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?);
-  `,
+  getUserVoteToday: `
+        SELECT ${VOTE_JSON}
+        FROM ranking_vote
+        WHERE user_id = ? AND ranking_group_id = ? 
+            AND unit_id = ? AND date = date('now');
+    `,
 
-  GetBestSnapshotDate: `
-    SELECT s.date
-    FROM ranking_daily_snapshot s
-    WHERE s.ranking_group_id = ?
-      AND s.date <= ?
-      AND EXISTS (
-        SELECT 1
+  getUserVotes: `
+        SELECT ${VOTE_JSON}
+        FROM ranking_vote
+        WHERE user_id = ? AND ranking_group_id = ?
+        ORDER BY date DESC, updated_at DESC
+        LIMIT ? OFFSET ?;
+    `,
+
+  // ==========================================
+  // TIEMPO REAL
+  // ==========================================
+
+  getRealtimeRanking: `
+        SELECT ${REALTIME_JSON}
+        FROM ranking_realtime r
+        WHERE r.ranking_group_id = ? AND r.current_position IS NOT NULL
+        ORDER BY r.current_position
+        LIMIT ? OFFSET ?;
+    `,
+
+  getUnitRealtime: `
+        SELECT ${REALTIME_JSON}
+        FROM ranking_realtime r
+        WHERE r.ranking_group_id = ? AND r.unit_id = ?;
+    `,
+
+  getTrendingUnits: `
+        SELECT ${REALTIME_JSON}
+        FROM ranking_realtime r
+        WHERE r.ranking_group_id = ? 
+            AND r.hourly_votes > 0
+            AND datetime(r.last_vote_at) > datetime('now', '-3 hours')
+        ORDER BY (r.hourly_votes * (100 - r.current_position + 1)) DESC
+        LIMIT ?;
+    `,
+
+  // ==========================================
+  // SNAPSHOTS
+  // ==========================================
+
+  getSnapshotByDate: `
+        SELECT ${SNAPSHOT_ITEM_JSON}
         FROM ranking_daily_snapshot_item i
-        WHERE i.ranking_group_id = s.ranking_group_id
-          AND i.date = s.date
-      )
-    ORDER BY s.date DESC
-    LIMIT 1;
-  `,
+        WHERE i.ranking_group_id = ? AND i.date = ?
+        ORDER BY i.position;
+    `,
 
-  GetSnapshotItems: `
-    SELECT
-      position,
-      unit_id,
-      score,
-      avg_rank,
-      votes_count
-    FROM ranking_daily_snapshot_item
-    WHERE ranking_group_id = ? AND date = ?
-    ORDER BY position ASC;
-  `,
+  getLatestSnapshot: `
+        SELECT ${SNAPSHOT_ITEM_JSON}
+        FROM ranking_daily_snapshot_item i
+        WHERE i.ranking_group_id = ? 
+            AND i.date = (
+                SELECT MAX(date) 
+                FROM ranking_daily_snapshot 
+                WHERE ranking_group_id = ?
+            )
+        ORDER BY i.position;
+    `,
 
-  GetUnitRankFromSnapshot: `
-    SELECT
-      position,
-      score,
-      avg_rank,
-      votes_count
-    FROM ranking_daily_snapshot_item
-    WHERE ranking_group_id = ?
-      AND date = ?
-      AND unit_id = ?
-    LIMIT 1;
-  `,
+  getUnitHistory: `
+        SELECT 
+            json_object(
+                'date', i.date,
+                'position', i.position,
+                'score', i.score,
+                'avg_rank', round(i.avg_rank, 2),
+                'votes', i.votes_count,
+                'change', i.position_change
+            ) data
+        FROM ranking_daily_snapshot_item i
+        WHERE i.ranking_group_id = ? AND i.unit_id = ?
+        ORDER BY i.date DESC
+        LIMIT ?;
+    `,
 
-  GetLastVoteForUserUnit: `
-    SELECT
-      user_id,
-      ranking_group_id,
-      unit_id,
-      date,
-      rank_position,
-      updated_at
-    FROM ranking_vote
-    WHERE user_id = ?
-      AND ranking_group_id = ?
-      AND unit_id = ?
-    ORDER BY date DESC, updated_at DESC
-    LIMIT 1;
-  `,
+  // ==========================================
+  // INSERTS (para admin)
+  // ==========================================
 
-  GetLastVoteForUser: `
-    SELECT
-      user_id,
-      ranking_group_id,
-      unit_id,
-      date,
-      rank_position,
-      updated_at
-    FROM ranking_vote
-    WHERE user_id = ?
-    ORDER BY date DESC, updated_at DESC
-    LIMIT 1;
-  `,
+  generateSnapshot: `
+        INSERT INTO ranking_daily_snapshot (
+            ranking_group_id, date, window_days, total_votes, total_units
+        )
+        SELECT 
+            ?,
+            date('now'),
+            ?,
+            COALESCE(SUM(r.votes_count), 0),
+            COUNT(*)
+        FROM ranking_realtime r
+        WHERE r.ranking_group_id = ?
+        RETURNING 
+            json_object(
+                'group_id', ranking_group_id,
+                'date', date,
+                'generated_at', generated_at,
+                'total_votes', total_votes,
+                'total_units', total_units
+            ) data;
+    `,
 
-  GetLastVoteForUserInGroup: `
-    SELECT
-      user_id,
-      ranking_group_id,
-      unit_id,
-      date,
-      rank_position,
-      updated_at
-    FROM ranking_vote
-    WHERE user_id = ?
-      AND ranking_group_id = ?
-    ORDER BY date DESC, updated_at DESC
-    LIMIT 1;
-  `,
+  generateSnapshotItems: `
+        INSERT INTO ranking_daily_snapshot_item (
+            ranking_group_id, date, unit_id, score, avg_rank, 
+            votes_count, position, previous_position
+        )
+        SELECT 
+            ?,
+            date('now'),
+            r.unit_id,
+            r.score,
+            r.avg_rank,
+            r.votes_count,
+            r.current_position,
+            (
+                SELECT i.position 
+                FROM ranking_daily_snapshot_item i
+                WHERE i.ranking_group_id = r.ranking_group_id 
+                    AND i.unit_id = r.unit_id
+                ORDER BY i.date DESC 
+                LIMIT 1
+            )
+        FROM ranking_realtime r
+        WHERE r.ranking_group_id = ? AND r.current_position <= 100
+        RETURNING ${SNAPSHOT_ITEM_JSON};
+    `,
 
-  GetVoteDistributionForUnits: `
-    WITH window_votes AS (
-      SELECT *
-      FROM ranking_vote
-      WHERE ranking_group_id = ?
-        AND date >= ? AND date <= ?
-        AND unit_id IN (<unit_ids>)
-    ),
-    latest_per_user_unit AS (
-      SELECT
-        user_id,
-        ranking_group_id,
-        unit_id,
-        MAX(date) AS latest_date
-      FROM window_votes
-      GROUP BY user_id, ranking_group_id, unit_id
-    ),
-    effective_votes AS (
-      SELECT v.unit_id, v.rank_position
-      FROM window_votes v
-      JOIN latest_per_user_unit l
-        ON l.user_id = v.user_id
-       AND l.ranking_group_id = v.ranking_group_id
-       AND l.unit_id = v.unit_id
-       AND l.latest_date = v.date
-    )
-    SELECT
-      unit_id,
-      GROUP_CONCAT(rank_position) AS vote_positions
-    FROM effective_votes
-    GROUP BY unit_id;
-  `,
+  // ==========================================
+  // UTILS
+  // ==========================================
 
-  GetSnapshotWindow: `
-    SELECT window_days
-    FROM ranking_daily_snapshot
-    WHERE ranking_group_id = ? AND date = ?
-    LIMIT 1;
-  `,
+  recalculatePositions: `
+        UPDATE ranking_realtime 
+        SET current_position = (
+            SELECT COUNT(*) + 1
+            FROM ranking_realtime r2
+            WHERE r2.ranking_group_id = ranking_realtime.ranking_group_id
+                AND (r2.score > ranking_realtime.score OR 
+                    (r2.score = ranking_realtime.score AND r2.unit_id < ranking_realtime.unit_id))
+        );
+    `
+};
 
-  ComputeLiveTopRankingRows: `
-WITH window_votes AS (
-      SELECT *
-      FROM ranking_vote
-      WHERE ranking_group_id = ?
-        AND date >= date(?, '-' || (? - 1) || ' days')
-        AND date <= date(?)
-    ),
-    latest_per_user_unit AS (
-      SELECT
-        user_id,
-        ranking_group_id,
-        unit_id,
-        MAX(date) AS latest_date
-      FROM window_votes
-      GROUP BY user_id, ranking_group_id, unit_id
-    ),
-    effective_votes AS (
-      SELECT v.*
-      FROM window_votes v
-      JOIN latest_per_user_unit l
-        ON l.user_id = v.user_id
-       AND l.ranking_group_id = v.ranking_group_id
-       AND l.unit_id = v.unit_id
-       AND l.latest_date = v.date
-    ),
-    -- NUEVA CTE: Agrupa por unidad y posición para contar frecuencias
-    vote_distribution AS (
-      SELECT 
-        unit_id,
-        -- Genera el formato "cantidad::posición" (ej: "3::2")
-        -- El ORDER BY dentro del concat asegura que los votos más altos (o bajos) salgan primero
-        GROUP_CONCAT(v_count || '::' || rank_position, ',') AS distribution
-      FROM (
-        SELECT unit_id, rank_position, COUNT(*) as v_count
-        FROM effective_votes
-        GROUP BY unit_id, rank_position
-        ORDER BY v_count DESC -- Ordena por los que tienen más votos
-      )
-      GROUP BY unit_id
-    ),
-    global_stats AS (
-      SELECT 
-        AVG(rank_position * 1.0) AS global_avg,
-        (SELECT AVG(v_count) FROM (SELECT COUNT(*) as v_count FROM effective_votes GROUP BY unit_id)) AS dynamic_m
-      FROM effective_votes
-    ),
-    ranked AS (
-      SELECT
-        unit_id,
-        AVG(rank_position * 1.0) AS R,
-        COUNT(*) AS v,
-        (SELECT global_avg FROM global_stats) AS C,
-        (SELECT dynamic_m FROM global_stats) AS m
-      FROM effective_votes
-      GROUP BY unit_id
-    )
-    SELECT
-       u._id AS unit_id,
-       u._num AS unit_num,
-       u.transform,
-       u.tagswitch,
-       u.fusion,
-	    (SELECT GROUP_CONCAT(un.num || '::' || un.lang || '::' || un.content, '|||' ORDER BY un.num) FROM unit_name un WHERE un.unit = u._id AND un.lang = ?) AS unit_names,
-      (SELECT GROUP_CONCAT(uc.color || '::' || uc.number || '::' || ct.lang || '::' || ct.content, '|||' ORDER BY uc.number) FROM unit_color uc JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ? WHERE uc.unit = u._id) AS color_texts,
-      ((r.v * r.R) + (r.m * r.C)) / (r.v + r.m) AS bayesian_avg,
-       r.R AS original_avg,
-       r.v AS votes_count,
-       vd.distribution AS vote_distribution
-    FROM ranked r
-    LEFT JOIN unit u ON u._id = r.unit_id
-    LEFT JOIN vote_distribution vd ON vd.unit_id = r.unit_id 
-    ORDER BY bayesian_avg ASC, votes_count DESC
-    LIMIT ?;
-  `,
-
-  ComputeLiveUnitRankRow: `
-    WITH window_votes AS (
-      SELECT *
-      FROM ranking_vote
-      WHERE ranking_group_id = ?
-        AND date >= date(?, '-' || (? - 1) || ' days')
-        AND date <= date(?)
-    ),
-    latest_per_user_unit AS (
-      SELECT
-        user_id,
-        ranking_group_id,
-        unit_id,
-        MAX(date) AS latest_date
-      FROM window_votes
-      GROUP BY user_id, ranking_group_id, unit_id
-    ),
-    effective_votes AS (
-      SELECT v.*
-      FROM window_votes v
-      JOIN latest_per_user_unit l
-        ON l.user_id = v.user_id
-       AND l.ranking_group_id = v.ranking_group_id
-       AND l.unit_id = v.unit_id
-       AND l.latest_date = v.date
-    ),
-    ranked AS (
-      SELECT
-        unit_id,
-        AVG(rank_position) AS avg_rank,
-        COUNT(*) AS votes_count
-      FROM effective_votes
-      GROUP BY unit_id
-    ),
-    ranked_with_positions AS (
-      SELECT
-        unit_id,
-        avg_rank,
-        votes_count,
-        ROW_NUMBER() OVER (ORDER BY avg_rank ASC, votes_count DESC) AS position
-      FROM ranked
-    )
-    SELECT
-      unit_id,
-      avg_rank,
-      votes_count,
-      position
-    FROM ranked_with_positions
-    WHERE unit_id = ?
-    LIMIT 1;
-  `
+export const SortQueries: Record<string, string> = {
+  "position": `ORDER BY r.current_position ASC`,
+  "score": `ORDER BY r.score DESC`,
+  "votes": `ORDER BY r.votes_count DESC`,
+  "trending": `ORDER BY r.hourly_votes DESC, r.current_position ASC`,
+  "recent": `ORDER BY r.last_vote_at DESC NULLS LAST`
 };
