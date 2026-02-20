@@ -1,4 +1,4 @@
-const BASIC_JSON_SELECT = `
+export const BASIC_JSON_SELECT = `
   json_object(
     '_id', u._id,
     'num', u._num,

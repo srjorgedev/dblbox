@@ -1,5 +1,6 @@
 import * as Types from "@/types/equip.types";
 import { EquipRepo } from "../repositories/equip.repo";
+import { parseBasic } from "@/utils/unit.utils";
 
 export class EquipService {
     private readonly repo: EquipRepo;
@@ -16,6 +17,28 @@ export class EquipService {
                 totalElements: r.length
             },
             data: r.map(unit => JSON.parse(unit.equipment_json))
+        }
+    }
+
+    async findByUnit(unit: string, lang: string) {
+        const r = await this.repo.findByUnit(unit, lang);
+
+        return {
+            meta: {
+                totalElements: r.length
+            },
+            data: r.map(unit => JSON.parse(unit.equipment_json))
+        }
+    }
+
+    async findUnits(id: number, lang: string) {
+        const r = await this.repo.findUnits(id, lang);
+
+        return {
+            meta: {
+                totalElements: r.length
+            },
+            data: r.map(unit => parseBasic(unit.basic_json as string))
         }
     }
 

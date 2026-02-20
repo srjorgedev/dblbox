@@ -43,4 +43,22 @@ export class EquipRepo {
 
         return Number(r.rows[0].Total);
     }
+
+    async findByUnit(id: string, lang: string): Promise<Types.DBArrResponse<"equipment_json">> {
+        const r = await this.db.execute({
+            sql: EquipQueries.byUnit,
+            args: [id, lang, lang]
+        })
+
+        return r.rows as unknown as Types.DBArrResponse<"equipment_json">;
+    }
+
+    async findUnits(id: number, lang: string) {
+        const r = await this.db.execute({
+            sql: EquipQueries.findUnitsByEquipmentID,
+            args: [id, lang, lang, lang, lang, lang, lang, lang, lang, lang]
+        })
+
+        return r.rows;
+    }
 }

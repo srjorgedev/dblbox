@@ -1,6 +1,6 @@
 import * as Types from "@/types/unit.types";
 import { UnitRepo } from "@/v1/domain/repositories/unit.repo";
-import { parseBasic } from "@/utils/unit.utils";
+import { parseBasic, groupAbilities } from "@/utils/unit.utils";
 
 export class UnitService {
     private readonly repo: UnitRepo;
@@ -9,7 +9,7 @@ export class UnitService {
         this.repo = unitRepo;
     }
 
-    async findAll(lang: string, sort: Types.Sort) {
+    async findAll(lang: string, sort: Types.Sort): Promise<Types.ServiceResponse<Types.AllMeta, Types.Basic[]>> {
         const r = await this.repo.findAll(lang, sort);
 
         return {
@@ -20,7 +20,7 @@ export class UnitService {
         }
     }
 
-    async findPage(limit: number, page: number, lang: string, sort: Types.Sort) {
+    async findPage(limit: number, page: number, lang: string, sort: Types.Sort): Promise<Types.ServiceResponse<Types.PageMeta, Types.Basic[]>> {
         const offset = (page - 1) * limit;
 
         const [total, r] = await Promise.all([
@@ -50,32 +50,32 @@ export class UnitService {
         }
     }
 
-    async findByID(id: string, lang: string) {
+    async findByID(id: string, lang: string): Promise<Types.ServiceResponse<Types.SingleMeta, Types.Unit>> {
         const r = await this.repo.findByID(id, lang);
 
         return {
             meta: {
-
+                lang
             },
             data: {
                 basic: JSON.parse(r.basic_json),
-                abilities: JSON.parse(r.abilities_json),
-                zenkaiAbilities: JSON.parse(r.zenkai_abilities_json)
+                abilities: groupAbilities(JSON.parse(r.abilities_json)),
+                zenkaiAbilities: groupAbilities(JSON.parse(r.zenkai_abilities_json))
             }
         }
     }
 
-    async findByNUM(num: number, lang: string) {
+    async findByNUM(num: number, lang: string): Promise<Types.ServiceResponse<Types.SingleMeta, Types.Unit>> {
         const r = await this.repo.findByNUM(num, lang);
 
         return {
             meta: {
-
+                lang
             },
             data: {
                 basic: JSON.parse(r.basic_json),
-                abilities: JSON.parse(r.abilities_json),
-                zenkaiAbilities: JSON.parse(r.zenkai_abilities_json)
+                abilities: groupAbilities(JSON.parse(r.abilities_json)),
+                zenkaiAbilities: groupAbilities(JSON.parse(r.zenkai_abilities_json))
             }
         }
     }

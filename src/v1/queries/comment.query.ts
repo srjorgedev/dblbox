@@ -1,3 +1,16 @@
+const DATA_SELECT = `
+JSON_OBJECT(
+	'id', _id,
+    'content', content,
+    'equipment_id', equipment_id,
+	'unit_id', unit_id,
+    'created_at', created_at,
+    'updated_at', updated_at,
+    'response_to', response_to,
+    'user', user
+) data
+`
+
 export const CommentQueries = {
     insertUnitComment: `
         INSERT INTO comments (content, user, unit_id) VALUES (?, ?, ?);
@@ -22,43 +35,21 @@ export const CommentQueries = {
         WHERE _id = ? AND user = ? 
     `,
     selectCommentsByUnit: `
-        SELECT 
-            _id,
-            content,
-            unit_id,
-            created_at,
-            updated_at,
-            response_to,
-            user
-        FROM comments
-        WHERE state = 1 AND unit_id = ?
-        ORDER BY created_at
+SELECT ${DATA_SELECT}
+FROM comments
+WHERE state = 1 AND unit_id = ?
+ORDER BY created_at
     `,
     selectCommentsByEquip: `
-        SELECT 
-            _id,
-            content,
-            equipment_id,
-            created_at,
-            updated_at,
-            response_to,
-            user
-        FROM comments
-        WHERE state = 1 AND equipment_id = ?
-        ORDER BY created_at
+SELECT ${DATA_SELECT}
+FROM comments
+WHERE state = 1 AND equipment_id = ?
+ORDER BY created_at
     `,
     selectCommentsByUser: `
-        SELECT 
-            _id,
-            content,
-            unit_id,
-            equipment_id
-            created_at,
-            updated_at,
-            response_to,
-            user
-        FROM comments
-        WHERE user = ?
-        ORDER BY created_at
+SELECT ${DATA_SELECT}
+FROM comments
+WHERE user = ?
+ORDER BY created_at
     `
 }
