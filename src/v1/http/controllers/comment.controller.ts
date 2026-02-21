@@ -98,7 +98,7 @@ export class CommentController {
         if (content == null) throw new AppError("error with content", 404);
         if (content.trim().length > 1000) throw new AppError("error with content length", 404);
 
-        const response = await this.service.updateComment({ _id: commentId, content, user });
+        const response = await this.service.updateComment({ id: commentId, content, user });
 
         res.status(200).json(response)
     }
@@ -112,7 +112,7 @@ export class CommentController {
         if (isNaN(commentId)) throw new AppError("Invalid comment id", 400);
         if (!user || typeof user !== "string") throw new AppError("User required", 400);
 
-        const response = await this.service.deleteComment({ _id: commentId, user });
+        const response = await this.service.deleteComment({ id: commentId, user });
 
         res.status(200).json(response)
     }
