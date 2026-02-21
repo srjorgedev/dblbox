@@ -15,10 +15,16 @@ export const BASIC_JSON_SELECT = `
     'name', (
       SELECT json_object(
         'count', COUNT(*),
-        'content', COALESCE(json_group_array(x.content), json('[]'))
+        'content', COALESCE(json_group_array(x.content), json('[]')),
+        'prefix', json_object(
+			    'has_prefix', iif(COUNT(x.prefix) FILTER (WHERE x.prefix IS NOT NULL) > 0, 
+                      json('true'), 
+                      json('false')),
+		      'content', json_group_array(x.prefix) FILTER (WHERE x.prefix IS NOT NULL)
+        )
       )
       FROM (
-        SELECT un.content
+        SELECT un.content, un.prefix
         FROM unit_name un
         WHERE un.unit = u._id
           AND un.lang = ?

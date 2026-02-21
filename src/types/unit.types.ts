@@ -66,12 +66,21 @@ export type Basic = {
     readonly tagswitch: boolean;
     readonly fusion: boolean;
     readonly states: number;
-    readonly name: Arr;
+    readonly name: Name;
     readonly rarity: Simple;
     readonly chapter: Simple;
     readonly type: Simple;
     readonly color: Obj;
     readonly tags: Obj;
+}
+
+export type Name = {
+    readonly count: number;
+    readonly content: string[];
+    readonly prefix: {
+        readonly has_prefix: boolean;
+        readonly content: string[] | [];
+    }
 }
 
 export type Simple = {
