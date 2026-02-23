@@ -14,8 +14,10 @@ export function authMiddleware(
     }
 
     if (!token) {
-        token = req.cookies?.accessToken;
+        token = req.cookies.accessToken;
     }
+    
+    console.log({token})
 
     if (!token) {
         return res.status(401).json({ message: "Unauthorized" });

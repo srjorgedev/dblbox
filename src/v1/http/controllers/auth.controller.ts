@@ -39,6 +39,7 @@ export class AuthController {
 
         res.clearCookie("refreshToken");
         res.clearCookie("sessionId");
+        res.clearCookie("accessToken")
 
         return res.json({ message: "Logged out" });
     }
@@ -56,22 +57,20 @@ export class AuthController {
     private setCookies(res: Response, data: any) {
         res.cookie("accessToken", data.accessToken, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV == "production",
             sameSite: "none"
         });
 
         res.cookie("refreshToken", data.refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV == "production",
             sameSite: "none",
-            path: "/api/v1/auth/refresh"
         });
 
         res.cookie("sessionId", data.sessionId, {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV == "production",
             sameSite: "none",
-            path: "/api/v1/auth/refresh"
         });
     }
 

@@ -29,8 +29,11 @@ export function initModules(dblDB: Client, cDB: Client): Router {
     const rSession = new Repository.SessionRepo(cDB);
     const rUser = new Repository.UserRepo(cDB);
 
-    const sAuth = new Service.AuthService(rUser, rAccount, rSession);
+    const rSuggestion = new Repository.SuggestionRepo(cDB);
+    const sSuggestion = new Service.SuggestionService(rSuggestion, rEquip, rUnit);
+    const cSuggestion = new Controller.SuggestionController(sSuggestion);
 
+    const sAuth = new Service.AuthService(rUser, rAccount, rSession);
     const cAuth = new Controller.AuthController(sAuth);
 
     for (const table of TABLES_ARRAY) {
@@ -42,10 +45,11 @@ export function initModules(dblDB: Client, cDB: Client): Router {
 
     configureGoogle(sAuth);
 
-    ROUTER.use("/auth", Routes.createAuthRoutes(cAuth))
-    ROUTER.use("/community/comment", Routes.createCommentRoutes(cComment))
+    ROUTER.use("/auth", Routes.createAuthRoutes(cAuth));
+    ROUTER.use("/community/comment", Routes.createCommentRoutes(cComment));
+    ROUTER.use("/community/suggest", Routes.createSuggestRoutes(cSuggestion));
     ROUTER.use("/unit", Routes.createUnitRoutes(cUnit));
-    ROUTER.use("/equip", Routes.createEquipRoutes(cEquip))
+    ROUTER.use("/equip", Routes.createEquipRoutes(cEquip));
 
     return ROUTER;
 }
