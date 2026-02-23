@@ -7,32 +7,32 @@ JSON_OBJECT(
     'created_at', created_at,
     'updated_at', updated_at,
     'response_to', response_to,
-    'user', user
+    'user_id', user_id
 ) data
 `
 
 export const CommentQueries = {
     insertUnitComment: `
-        INSERT INTO comments (content, user, unit_id) VALUES (?, ?, ?);
+        INSERT INTO comments (content, user_id, unit_id) VALUES (?, ?, ?);
     `,
     insertEquipComment: `
-        INSERT INTO comments (content, user, equipment_id) VALUES (?, ?, ?)
+        INSERT INTO comments (content, user_id, equipment_id) VALUES (?, ?, ?)
     `,
     insertUnitCommentResponse: `
-        INSERT INTO comments (content, user, unit_id, response_to) VALUES (?, ?, ?, ?);
+        INSERT INTO comments (content, user_id, unit_id, response_to) VALUES (?, ?, ?, ?);
     `,
     insertEquipCommentResponse: `
-        INSERT INTO comments (content, user, equipment_id, response_to) VALUES (?, ?, ?, ?);
+        INSERT INTO comments (content, user_id, equipment_id, response_to) VALUES (?, ?, ?, ?);
     `,
     deleteComment: `
         UPDATE comments 
         SET state = 0 
-        WHERE _id = ? AND user = ? 
+        WHERE _id = ? AND user_id = ? 
     `,
     updateComment: `
         UPDATE comments 
         SET content = ?, updated_at = datetime('now')
-        WHERE _id = ? AND user = ? 
+        WHERE _id = ? AND user_id = ? 
     `,
     selectCommentsByUnit: `
 SELECT ${DATA_SELECT}
@@ -49,7 +49,7 @@ ORDER BY created_at
     selectCommentsByUser: `
 SELECT ${DATA_SELECT}
 FROM comments
-WHERE user = ?
+WHERE user_id = ?
 ORDER BY created_at
     `
 }

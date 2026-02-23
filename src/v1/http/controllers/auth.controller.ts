@@ -11,7 +11,7 @@ export class AuthController {
     async login(req: Request, res: Response) {
         const { email, password } = req.body;
 
-        const result = await this.login(email, password);
+        const result = await this.service.login(email, password);
 
         this.setCookies(res, result);
 

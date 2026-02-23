@@ -21,9 +21,9 @@ export function initModules(dblDB: Client, cDB: Client): Router {
     const sEquip = new Service.EquipService(rEquip);
     const cEquip = new Controller.EquipController(sEquip);
 
-    const rComment = new Repository.CommentRepo(dblDB);
+    const rComment = new Repository.CommentRepo(cDB);
     const sComment = new Service.CommentService(rComment);
-    const cComment = new Controller.CommentController(sComment);
+    const cComment = new Controller.CommentController(sComment, sUnit, sEquip);
 
     const rAccount = new Repository.AccountRepo(cDB);
     const rSession = new Repository.SessionRepo(cDB);

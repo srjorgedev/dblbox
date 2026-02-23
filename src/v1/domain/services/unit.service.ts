@@ -79,4 +79,8 @@ export class UnitService {
             }
         }
     }
+
+    async exist(id: string) {
+        return Boolean((await this.repo.exist(id)).exist);
+    }
 }

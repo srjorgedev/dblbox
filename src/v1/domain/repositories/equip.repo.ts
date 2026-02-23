@@ -61,4 +61,13 @@ export class EquipRepo {
 
         return r.rows;
     }
+
+    async exist(id: number): Promise<Record<'exist', number>> {
+        const r = await this.db.execute({
+            sql: "SELECT COUNT(_id) exist FROM equipment WHERE _id = ?;",
+            args: [id]
+        })
+
+        return r.rows[0] as unknown as Record<'exist', number>;
+    }
 }

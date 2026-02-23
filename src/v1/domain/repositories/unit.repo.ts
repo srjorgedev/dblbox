@@ -52,4 +52,13 @@ export class UnitRepo {
 
         return Number(r.rows[0].Total);
     }
+
+    async exist(id: string): Promise<Record<'exist', number>> {
+        const r = await this.db.execute({
+            sql: "SELECT COUNT(_id) exist FROM unit WHERE _id = ?;",
+            args: [id]
+        })
+
+        return r.rows[0] as unknown as Record<'exist', number>;
+    }
 }

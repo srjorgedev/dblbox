@@ -86,4 +86,8 @@ export class EquipService {
             }
         }
     }
+
+    async exist(id: number) {
+        return Boolean((await this.repo.exist(id)).exist);
+    }
 }

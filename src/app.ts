@@ -7,6 +7,7 @@ import { initModules } from "./init";
 import { globalErrorHandler } from "./middlewares/error.handler";
 
 import passport from "passport";
+import cookieParser from "cookie-parser";
 
 async function main() {
     const PORT = process.env.PORT || 1130;
@@ -27,6 +28,7 @@ async function main() {
 
     server.use(e.json());
     server.use(e.urlencoded({ extended: true }));
+    server.use(cookieParser());
     server.use(cors({
         origin: ["http://localhost:4321"],
         allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],

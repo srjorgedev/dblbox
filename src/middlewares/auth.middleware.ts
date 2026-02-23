@@ -6,17 +6,30 @@ export function authMiddleware(
     res: Response,
     next: NextFunction
 ) {
-    const authHeader = req.headers.authorization;
+    let token: string | undefined;
 
-    if (!authHeader?.startsWith("Bearer ")) {
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+    }
+
+    if (!token) {
+        token = req.cookies?.accessToken;
+    }
+
+    if (!token) {
         return res.status(401).json({ message: "Unauthorized" });
     }
 
-    const token = authHeader.split(" ")[1];
-
     try {
         const payload = verifyToken(token);
-        req.user = payload;
+
+        console.log(payload)
+
+        req.user = {
+            id: payload.sub,
+        };
+
         next();
     } catch {
         return res.status(401).json({ message: "Invalid token" });

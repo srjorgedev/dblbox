@@ -1,13 +1,29 @@
-import { CommentService } from "@/v1/domain/services";
+import { CommentService, EquipService, UnitService } from "@/v1/domain/services";
 import { Request, Response } from "express";
 import { CommentFrom, COMMENTS_ARRAY } from "@/types/comment.types";
 import { AppError } from "@/utils/AppError";
 
 export class CommentController {
     private readonly service: CommentService;
+    private readonly sUnit: UnitService;
+    private readonly sEquip: EquipService;
 
-    constructor(commentService: CommentService) {
+    constructor(commentService: CommentService, unitService: UnitService, equipService: EquipService) {
         this.service = commentService;
+        this.sUnit = unitService;
+        this.sEquip = equipService;
+    }
+
+    private async exist(from: CommentFrom, id: string) {
+        if (from == "unit") {
+            const exist = await this.sUnit.exist(String(id));
+            if (!exist) throw new AppError("error", 404);
+        }
+
+        if (from == "equip") {
+            const exist = await this.sEquip.exist(Number(id));
+            if (!exist) throw new AppError("error", 404);
+        }
     }
 
     // Route -> /community/comment/all
@@ -18,6 +34,8 @@ export class CommentController {
         if (from == null) throw new AppError("error", 404);
         if (id == null) throw new AppError("error", 404);
         if (!(COMMENTS_ARRAY as readonly string[]).includes(from)) throw new AppError("error", 404);
+
+        await this.exist(from, String(id));
 
         let response;
         switch (from) {
@@ -35,10 +53,9 @@ export class CommentController {
         const id = (req.query.id as string) || null;
 
         const content = (req.body.content as string) || null;
-        const user = req.body.user;
+        const user = req.user?.id;
 
         if (!(COMMENTS_ARRAY as readonly string[]).includes(to) && to == "user") throw new AppError("error with destiny, doesn't exists", 404);
-        if (!user || typeof user !== "string") throw new AppError("User required", 400);
         if (content == null) throw new AppError("error with content", 404);
         if (to == null) throw new AppError("error with destiny", 404);
         if (id == null) throw new AppError("error with comment item", 404);
@@ -46,10 +63,12 @@ export class CommentController {
 
         if (content.trim().length > 1000) throw new AppError("error with content length", 404);
 
+        await this.exist(to, String(id));
+
         let response;
         switch (to) {
-            case "equip": response = await this.service.insertByEquip({ content, equipment_id: Number(id), user: user }); break;
-            case "unit": response = await this.service.insertByUnit({ content, unit_id: id, user }); break;
+            case "equip": response = await this.service.insertByEquip({ content, equipment_id: Number(id), user: user! }); break;
+            case "unit": response = await this.service.insertByUnit({ content, unit_id: id, user: user! }); break;
         }
 
         res.status(200).json(response)
@@ -67,7 +86,6 @@ export class CommentController {
         const user = req.body.user;
 
         if (isNaN(commentId)) throw new AppError("Invalid comment id", 400);
-        if (!user || typeof user !== "string") throw new AppError("User required", 400);
         if (content == null) throw new AppError("error with content", 404);
         if (to == null) throw new AppError("error with destiny", 404);
         if (id == null) throw new AppError("error with comment item", 404);
@@ -75,6 +93,8 @@ export class CommentController {
         if (to === "equip" && isNaN(Number(id))) throw new AppError("Invalid equipment id", 400);
 
         if (content.trim().length > 1000) throw new AppError("error with content length", 404);
+
+        await this.exist(to, String(id));
 
         let response;
         switch (to) {
