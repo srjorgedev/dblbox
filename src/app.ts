@@ -6,14 +6,22 @@ import Database from "./config/db";
 import { initModules } from "./init";
 import { globalErrorHandler } from "./middlewares/error.handler";
 
+import passport from "passport";
+
 async function main() {
     const PORT = process.env.PORT || 1130;
     const DB = process.env.DATABASE;
-    const DB_URL = `file:${path.join(process.cwd(), DB)}`;
+    const CDB = process.env.COMMUNITY_DB;
 
-    const db = new Database(DB_URL).getConnection();
+    const DB_URL = `file:${path.join(process.cwd(), DB)}`;
+    const C_DB_URL = `file:${path.join(process.cwd(), CDB)}`;
+
+    const dblDB = new Database(DB_URL).getConnection();
+    const cDB = new Database(C_DB_URL).getConnection();
 
     const server = e();
+
+    server.use(passport.initialize())
 
     server.set("trust proxy", 1);
 
@@ -22,9 +30,10 @@ async function main() {
     server.use(cors({
         origin: ["http://localhost:4321"],
         allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
+        credentials: true
     }));
 
-    const dblBoxRouter = initModules(db);
+    const dblBoxRouter = initModules(dblDB, cDB);
     server.use("/api/v1/assets", e.static(path.join(process.cwd(), 'data', 'assets')));
     server.use("/api/v1", dblBoxRouter);
 

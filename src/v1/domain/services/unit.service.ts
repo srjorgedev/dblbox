@@ -1,6 +1,6 @@
 import * as Types from "@/types/unit.types";
 import { UnitRepo } from "@/v1/domain/repositories/unit.repo";
-import { parseBasic, groupAbilities } from "@/utils/unit.utils";
+import { parseBasic, groupAbilities } from "@/utils/unit.util";
 
 export class UnitService {
     private readonly repo: UnitRepo;

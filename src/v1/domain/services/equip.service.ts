@@ -1,6 +1,6 @@
 import * as Types from "@/types/equip.types";
 import { EquipRepo } from "../repositories/equip.repo";
-import { parseBasic } from "@/utils/unit.utils";
+import { parseBasic } from "@/utils/unit.util";
 
 export class EquipService {
     private readonly repo: EquipRepo;
