@@ -14,9 +14,13 @@ export function createAuthRoutes(controller: AuthController) {
 
     router.get(
         "/google",
-        passport.authenticate("google", {
-            scope: ["profile", "email"]
-        })
+        (req, res, next) => {
+            const redirect = req.query.redirect as string;
+            passport.authenticate("google", {
+                scope: ["profile", "email"],
+                state: redirect
+            })(req, res, next);
+        }
     );
 
     router.get(
@@ -30,7 +34,13 @@ export function createAuthRoutes(controller: AuthController) {
     router.get(
         "/google/link",
         authMiddleware, 
-        passport.authenticate("google", { scope: ["profile", "email"] })
+        (req, res, next) => {
+            const redirect = req.query.redirect as string;
+            passport.authenticate("google", { 
+                scope: ["profile", "email"],
+                state: redirect
+            })(req, res, next);
+        }
     );
 
     router.get(

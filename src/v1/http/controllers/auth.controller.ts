@@ -10,10 +10,15 @@ export class AuthController {
 
     async login(req: Request, res: Response) {
         const { email, password } = req.body;
+        const redirectUrl = (req.query.redirect as string) || (req.body.redirect as string);
 
         const result = await this.service.login(email, password);
 
         this.setCookies(res, result);
+
+        if (redirectUrl) {
+            return res.redirect(redirectUrl);
+        }
 
         return res.json({ ok: true });
     }
@@ -46,10 +51,15 @@ export class AuthController {
 
     async register(req: Request, res: Response) {
         const { email, password, username } = req.body;
+        const redirectUrl = (req.query.redirect as string) || (req.body.redirect as string);
 
         const result = await this.service.register(username, email, password);
 
         this.setCookies(res, result);
+
+        if (redirectUrl) {
+            return res.redirect(redirectUrl);
+        }
 
         return res.status(201).json({ ok: true });
     }
@@ -75,20 +85,23 @@ export class AuthController {
     }
 
     async linkGoogle(req: Request, res: Response) {
-
-        const userId = (req as any).userFromJwt.id;
+        const userId = (req as any).userFromJwt?.id || req.user?.id;
         const profile = req.user; 
+        const state = req.query.state as string;
+        const redirectUrl = state || `${process.env.FRONTEND_URL}/settings`;
 
         await this.service.linkGoogleAccount(userId, profile);
 
-        return res.redirect(`${process.env.FRONTEND_URL}/settings`);
+        return res.redirect(redirectUrl);
     }
 
     async googleRedirect(req: Request, res: Response) {
         const { accessToken, refreshToken, sessionId } = req.user as any;
+        const state = req.query.state as string;
+        const redirectUrl = state || `${process.env.FRONTEND_URL}/dashboard`;
 
         this.setCookies(res, { accessToken, refreshToken, sessionId });
 
-        return res.redirect(`${process.env.FRONTEND_URL}/dashboard`);
+        return res.redirect(redirectUrl);
     }
 }
