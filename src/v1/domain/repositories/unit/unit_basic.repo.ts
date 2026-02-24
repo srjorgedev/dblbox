@@ -10,13 +10,13 @@ export class UnitBasicRepo {
         this.db = db;
     }
 
-    async findByID(unit_id: string): Promise<Types.UnitBasicResponse> {
+    async findByID(unit_id: string, lang: string): Promise<Types.UnitBasicResponse> {
         const r = await this.db.execute({
             sql: UnitQueries.findBasicByID,
-            args: [unit_id]
+            args: [lang, lang, lang, unit_id]
         });
 
-        return r.rows as unknown as Types.UnitBasicResponse;
+        return r.rows[0] as unknown as Types.UnitBasicResponse;
     }
 
     async insertSingle(data: Types.UnitBasic): Promise<number> {

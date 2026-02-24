@@ -138,12 +138,14 @@ export type TableMap = {
 export type UnitTag = {
     unit: string;
     tag: number;
+    name?: string;
 }
 
 export type UnitColor = {
     number: number;
     unit: string;
     color: number;
+    name?: string;
 }
 
 export type UnitColorUpdate = Partial<Omit<UnitColor, "num" | "unit">>

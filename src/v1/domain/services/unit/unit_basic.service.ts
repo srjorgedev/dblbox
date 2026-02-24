@@ -9,14 +9,23 @@ export class UnitBasicService {
         this.repo = repo;
     }
 
-    async findByID(unit_id: string): Promise<Types.UnitBasicResponse> {
+    async findByID(unit_id: string, lang: string): Promise<Types.ServiceResponse<{ totalElements: number; lang: string }, any>> {
         if (!unit_id) throw new AppError("Unit ID is required", 400);
 
-        const result = await this.repo.findByID(unit_id);
+        const result = await this.repo.findByID(unit_id, lang);
         if (!result || (Array.isArray(result) && result.length === 0)) {
             throw new AppError(`Unit basic data not found for ID: ${unit_id}`, 404);
         }
-        return result;
+
+        const data = JSON.parse(result.basic_json);
+
+        return {
+            meta: {
+                totalElements: 1,
+                lang
+            },
+            data
+        };
     }
 
     async insertSingle(data: Types.UnitBasic): Promise<number> {

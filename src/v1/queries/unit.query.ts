@@ -200,7 +200,39 @@ export const UnitQueries = {
     WHERE number = ? AND unit = ?
   `,
   findBasicByID: `
-    SELECT ${BASIC_JSON_SELECT}
+    SELECT json_object(
+    '_id', u._id,
+    'num', u._num,
+    'transform', iif(u.transform = 1, json('true'), json('false')),
+    'lf', iif(u.lf = 1, json('true'), json('false')),
+    'zenkai', iif(u.zenkai = 1, json('true'), json('false')),
+    'tagswitch', iif(u.tagswitch = 1, json('true'), json('false')),
+    'fusion', iif(u.fusion = 1, json('true'), json('false')),
+    'states', 1
+      + iif(u.transform = 1, 1, 0)
+      + iif(u.tagswitch = 1, 1, 0)
+      + iif(u.fusion = 1, 1, 0),
+    'rarity', (
+      SELECT json_object('id', r.rarity, 'name', r.content)
+      FROM rarity_texts r
+      WHERE r.rarity = u.rarity
+        AND r.lang = ?
+    ),
+
+    'chapter', (
+      SELECT json_object('id', ch.chapter, 'name', ch.content)
+      FROM chapter_texts ch
+      WHERE ch.chapter = u.chapter
+        AND ch.lang = ?
+    ),
+
+    'type', (
+      SELECT json_object('id', t.type, 'name', t.content)
+      FROM type_texts t
+      WHERE t.type = u.type
+        AND t.lang = ?
+    )
+  ) AS basic_json
     FROM unit u
     WHERE u._id = ?
     `,
@@ -214,21 +246,23 @@ export const UnitQueries = {
     WHERE _id = ?;
   `,
   findColorByID: `
-    SELECT uc.number, uc.unit, uc.color 
+    SELECT uc.number, uc.unit, uc.color, ct.content as name
     FROM unit_color uc
-    LEFT JOIN unit u ON uc.unit = u._id
-    WHERE u._id = ?
+    JOIN color_texts ct ON ct.color = uc.color AND ct.lang = ?
+    WHERE uc.unit = ?
+    ORDER BY uc.number
   `,
   insertColor: `
   INSERT INTO unit_color
   (${UNIT_COLOR_TABLE_COLUMNS.join(", ")})
-  VALUES (${Array(UNIT_BASIC_TABLE_COLUMNS.length).fill("?").join(", ")})
+  VALUES (${Array(UNIT_COLOR_TABLE_COLUMNS.length).fill("?").join(", ")})
   `,
   findTagByID: `
-    SELECT ut.unit as unit, ut.tag as tag 
+    SELECT ut.unit as unit, ut.tag as tag, tt.content as name
     FROM unit_tag ut
-    LEFT JOIN unit u ON ut.unit = u._id
-    WHERE u._id = ?
+    JOIN tag_texts tt ON tt.tag = ut.tag AND tt.lang = ?
+    WHERE ut.unit = ?
+    ORDER BY ut.tag
   `,
   deleteTag: `
     DELETE FROM unit_tag

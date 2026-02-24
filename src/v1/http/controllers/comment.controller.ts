@@ -29,19 +29,19 @@ export class CommentController {
     // Route -> /community/comment/all
     async getAllComments(req: Request, res: Response) {
         const from = req.query.from == undefined ? null : req.query.from as CommentFrom;
-        const id = req.query.id == undefined ? null : req.query.id;
+        const id = req.query.id == undefined ? null : req.query.id as string;
 
         if (from == null) throw new AppError("error", 404);
         if (id == null) throw new AppError("error", 404);
         if (!(COMMENTS_ARRAY as readonly string[]).includes(from)) throw new AppError("error", 404);
 
-        await this.exist(from, String(id));
+        await this.exist(from, id);
 
         let response;
         switch (from) {
             case "equip": response = await this.service.findByEquip(Number(id)); break;
-            case "unit": response = await this.service.findByUnit(String(id)); break;
-            case "user": response = await this.service.findByUser(String(id)); break;
+            case "unit": response = await this.service.findByUnit(id); break;
+            case "user": response = await this.service.findByUser(id); break;
         }
 
         res.status(200).json(response)

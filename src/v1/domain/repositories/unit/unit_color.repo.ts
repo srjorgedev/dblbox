@@ -10,13 +10,13 @@ export class UnitColorRepo {
         this.db = db;
     }
 
-    async findByID(unit_id: string): Promise<Types.UnitColor> {
+    async findByID(unit_id: string, lang: string): Promise<Types.UnitColor[]> {
         const r = await this.db.execute({
             sql: UnitQueries.findColorByID,
-            args: [unit_id]
+            args: [lang, unit_id]
         });
 
-        return r.rows as unknown as Types.UnitColor;
+        return r.rows as unknown as Types.UnitColor[];
     }
 
     async insertSingle(data: Types.UnitColor): Promise<number> {

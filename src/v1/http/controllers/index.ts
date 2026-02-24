@@ -4,3 +4,8 @@ export * from "@/v1/http/controllers/data.controller";
 export * from "@/v1/http/controllers/comment.controller";
 export * from "@/v1/http/controllers/auth.controller";
 export * from "@/v1/http/controllers/suggestion.controller";
+export * from "@/v1/http/controllers/unit/unit_tag.controller";
+export * from "@/v1/http/controllers/unit/unit_basic.controller";
+export * from "@/v1/http/controllers/unit/unit_color.controller";
+export * from "@/v1/http/controllers/unit/unit_name.controller";
+export * from "@/v1/http/controllers/unit/unit_composite.controller";

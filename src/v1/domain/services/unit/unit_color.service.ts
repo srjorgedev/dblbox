@@ -9,14 +9,21 @@ export class UnitColorService {
         this.repo = repo;
     }
 
-    async findByID(unit_id: string): Promise<Types.UnitColor[]> {
+    async findByID(unit_id: string, lang: string): Promise<Types.ServiceResponse<{ totalElements: number; lang: string }, Types.UnitColor[]>> {
         if (!unit_id) throw new AppError("Unit ID is required", 400);
 
-        const result = await this.repo.findByID(unit_id) as unknown as Types.UnitColor[];
+        const result = await this.repo.findByID(unit_id, lang);
         if (!result || result.length === 0) {
             throw new AppError(`No color data found for unit ID: ${unit_id}`, 404);
         }
-        return result;
+        
+        return {
+            meta: {
+                totalElements: result.length,
+                lang
+            },
+            data: result
+        };
     }
 
     async insertSingle(data: Types.UnitColor): Promise<number> {

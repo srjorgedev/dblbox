@@ -10,13 +10,13 @@ export class UnitTagRepo {
         this.db = db;
     }
 
-    async findByID(unit_id: string): Promise<Types.UnitTag> {
+    async findByID(unit_id: string, lang: string): Promise<Types.UnitTag[]> {
         const r = await this.db.execute({
             sql: UnitQueries.findTagByID,
-            args: [unit_id]
+            args: [lang, unit_id]
         });
 
-        return r.rows as unknown as Types.UnitTag;
+        return r.rows as unknown as Types.UnitTag[];
     }
 
     async insertSingle(data: Types.UnitTag): Promise<number> {

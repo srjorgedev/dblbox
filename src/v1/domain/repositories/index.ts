@@ -9,3 +9,4 @@ export * from "@/v1/domain/repositories/suggestion.repo";
 export * from "@/v1/domain/repositories/unit/unit_name.repo";
 export * from "@/v1/domain/repositories/unit/unit_basic.repo";
 export * from "@/v1/domain/repositories/unit/unit_color.repo";
+export * from "@/v1/domain/repositories/unit/unit_tag.repo";

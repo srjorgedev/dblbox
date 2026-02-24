@@ -30,7 +30,7 @@ export class UnitController {
     // Route -> GET api/v1/unit/:id
     async getUnit(req: Request, res: Response) {
         const lang = (req.query.lang as string) || "en";
-        const { id } = req.params
+        const id = req.params.id as string;
 
         let data;
 
@@ -39,7 +39,7 @@ export class UnitController {
         }
 
         if (isNaN(Number(id))) {
-            data = await this.service.findByID(String(id), lang);
+            data = await this.service.findByID(id, lang);
         }
 
         res.status(200).json(data)

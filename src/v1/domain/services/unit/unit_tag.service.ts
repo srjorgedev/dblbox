@@ -12,20 +12,26 @@ export class UnitTagService {
     /**
      * Find all tags associated with a unit ID.
      * @param unit_id - The ID of the unit to search tags for.
+     * @param lang - The language for tag names.
      */
-    async findByID(unit_id: string): Promise<Types.UnitTag[]> {
+    async findByID(unit_id: string, lang: string): Promise<Types.ServiceResponse<{ totalElements: number; lang: string }, Types.UnitTag[]>> {
         if (!unit_id) {
             throw new AppError("Unit ID is required", 400);
         }
 
-        // The repo cast to UnitTag is actually UnitTag[] because rows is an array
-        const tags = await this.repo.findByID(unit_id) as unknown as Types.UnitTag[];
+        const tags = await this.repo.findByID(unit_id, lang);
 
         if (!tags || tags.length === 0) {
             throw new AppError(`No tags found for unit: ${unit_id}`, 404);
         }
 
-        return tags;
+        return {
+            meta: {
+                totalElements: tags.length,
+                lang
+            },
+            data: tags
+        };
     }
 
     /**

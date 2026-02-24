@@ -17,6 +17,22 @@ export function initModules(dblDB: Client, cDB: Client): Router {
     const sUnit = new Service.UnitService(rUnit);
     const cUnit = new Controller.UnitController(sUnit);
 
+    const rBasic = new Repository.UnitBasicRepo(dblDB);
+    const rName = new Repository.UnitNameRepo(dblDB);
+    const rColor = new Repository.UnitColorRepo(dblDB);
+    const rTag = new Repository.UnitTagRepo(dblDB);
+
+    const sBasic = new Service.UnitBasicService(rBasic);
+    const sName = new Service.UnitNameService(rName);
+    const sColor = new Service.UnitColorService(rColor);
+    const sTag = new Service.UnitTagService(rTag);
+
+    const cBasic = new Controller.UnitBasicController(sBasic);
+    const cName = new Controller.UnitNameController(sName);
+    const cColor = new Controller.UnitColorController(sColor);
+    const cTag = new Controller.UnitTagController(sTag);
+    const cComposite = new Controller.UnitCompositeController(sBasic, sName, sColor, sTag);
+
     const rEquip = new Repository.EquipRepo(dblDB);
     const sEquip = new Service.EquipService(rEquip);
     const cEquip = new Controller.EquipController(sEquip);
@@ -48,7 +64,7 @@ export function initModules(dblDB: Client, cDB: Client): Router {
     ROUTER.use("/auth", Routes.createAuthRoutes(cAuth));
     ROUTER.use("/community/comment", Routes.createCommentRoutes(cComment));
     ROUTER.use("/community/suggest", Routes.createSuggestRoutes(cSuggestion));
-    ROUTER.use("/unit", Routes.createUnitRoutes(cUnit));
+    ROUTER.use("/unit", Routes.createUnitRoutes(cUnit, cBasic, cName, cColor, cTag, cComposite));
     ROUTER.use("/equip", Routes.createEquipRoutes(cEquip));
 
     return ROUTER;
