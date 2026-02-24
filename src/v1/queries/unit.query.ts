@@ -1,3 +1,5 @@
+import { UNIT_BASIC_TABLE_COLUMNS, UNIT_COLOR_TABLE_COLUMNS, UNIT_NAME_TABLE_COLUMNS } from "@/types/unit.types";
+
 export const BASIC_JSON_SELECT = `
   json_object(
     '_id', u._id,
@@ -177,7 +179,61 @@ export const UnitQueries = {
             AND un.content LIKE '%' || ? || '%'
         )
         <order>
-    `
+    `,
+  insertNames: `
+      INSERT INTO unit_name
+      (${UNIT_NAME_TABLE_COLUMNS.join(", ")})
+      VALUES (${Array(UNIT_NAME_TABLE_COLUMNS.length).fill("?").join(", ")})
+    `,
+  findNamesByID: `
+    SELECT 
+    ${UNIT_NAME_TABLE_COLUMNS.join(", ")}
+    FROM unit_name un
+    LEFT JOIN unit u ON u._id = un.unit
+    WHERE u._id = ?
+    `,
+  deleteName:
+    `DELETE FROM unit_name
+    WHERE num = ? AND lang = ? AND unit = ?`,
+  deleteColor: `
+    DELETE FROM unit_color
+    WHERE number = ? AND unit = ?
+  `,
+  findBasicByID: `
+    SELECT ${BASIC_JSON_SELECT}
+    FROM unit u
+    WHERE u._id = ?
+    `,
+  insertBasic: `
+    INSERT INTO unit
+    (${UNIT_BASIC_TABLE_COLUMNS.join(", ")})
+    VALUES (${Array(UNIT_BASIC_TABLE_COLUMNS.length).fill("?").join(", ")})
+  `,
+  deleteBasic: `
+    DELETE FROM unit
+    WHERE _id = ?;
+  `,
+  findColorByID: `
+    SELECT uc.number, uc.unit, uc.color 
+    FROM unit_color uc
+    LEFT JOIN unit u ON uc.unit = u._id
+    WHERE u._id = ?
+  `,
+  insertColor: `
+  INSERT INTO unit_color
+  (${UNIT_COLOR_TABLE_COLUMNS.join(", ")})
+  VALUES (${Array(UNIT_BASIC_TABLE_COLUMNS.length).fill("?").join(", ")})
+  `,
+  findTagByID: `
+    SELECT ut.unit as unit, ut.tag as tag 
+    FROM unit_tag ut
+    LEFT JOIN unit u ON ut.unit = u._id
+    WHERE u._id = ?
+  `,
+  deleteTag: `
+    DELETE FROM unit_tag
+    WHERE unit = ? AND tag = ?;
+  `
 };
 
 type SortQueriesType = {

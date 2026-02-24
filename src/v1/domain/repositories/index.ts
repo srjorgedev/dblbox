@@ -6,3 +6,6 @@ export * from "@/v1/domain/repositories/auth/account.repo";
 export * from "@/v1/domain/repositories/auth/session.repo";
 export * from "@/v1/domain/repositories/auth/user.repo";
 export * from "@/v1/domain/repositories/suggestion.repo";
+export * from "@/v1/domain/repositories/unit/unit_name.repo";
+export * from "@/v1/domain/repositories/unit/unit_basic.repo";
+export * from "@/v1/domain/repositories/unit/unit_color.repo";
