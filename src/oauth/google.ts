@@ -13,7 +13,7 @@ export function configureGoogle(authService: AuthService) {
         async (_accessToken, _refreshToken, profile, done) => {
             try {
                 const result = await authService.loginWithGoogle(profile);
-                done(null, result);
+                done(null, result as any);
             } catch (err) {
                 done(err as Error);
             }
