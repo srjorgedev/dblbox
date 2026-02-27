@@ -18,9 +18,19 @@ export function createAuthRoutes(controller: AuthController) {
         "/google",
         (req, res, next) => {
             const redirect = req.query.redirect as string;
+
+            if (redirect) {
+                res.cookie("oauth_redirect", redirect, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "none",
+                    maxAge: 5 * 60 * 1000
+                });
+            }
+            
             passport.authenticate("google", {
                 scope: ["profile", "email"],
-                state: redirect
+                session: false
             })(req, res, next);
         }
     );
@@ -35,12 +45,22 @@ export function createAuthRoutes(controller: AuthController) {
 
     router.get(
         "/google/link",
-        authMiddleware, 
+        authMiddleware,
         (req, res, next) => {
             const redirect = req.query.redirect as string;
-            passport.authenticate("google", { 
+
+            if (redirect) {
+                res.cookie("oauth_redirect", redirect, {
+                    httpOnly: true,
+                    secure: true,
+                    sameSite: "none",
+                    maxAge: 5 * 60 * 1000
+                });
+            }
+
+            passport.authenticate("google", {
                 scope: ["profile", "email"],
-                state: redirect
+                session: false
             })(req, res, next);
         }
     );

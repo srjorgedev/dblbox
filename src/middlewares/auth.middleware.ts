@@ -28,7 +28,8 @@ export function authMiddleware(
 
         console.log(payload)
 
-        req.user = {
+        req.userId = payload.sub;
+        req.userFromJwt = {
             id: payload.sub,
         };
 

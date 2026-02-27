@@ -67,28 +67,29 @@ export class AuthController {
     private setCookies(res: Response, data: any) {
         res.cookie("accessToken", data.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV == "production",
+            secure: true,
             sameSite: "none"
         });
 
         res.cookie("refreshToken", data.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV == "production",
+            secure: true,
             sameSite: "none",
         });
 
         res.cookie("sessionId", data.sessionId, {
             httpOnly: true,
-            secure: process.env.NODE_ENV == "production",
+            secure: true,
             sameSite: "none",
         });
     }
 
     async linkGoogle(req: Request, res: Response) {
-        const userId = (req as any).userFromJwt?.id || req.user?.id;
-        const profile = req.user; 
-        const state = req.query.state as string;
-        const redirectUrl = state || `${process.env.FRONTEND_URL}/settings`;
+        const userId = req.userId!;
+        const profile = req.user;
+
+        const redirectUrl = req.cookies.oauth_redirect || `${process.env.FRONTEND_URL}/settings`;
+        res.clearCookie("oauth_redirect");
 
         await this.service.linkGoogleAccount(userId, profile);
 
@@ -96,17 +97,19 @@ export class AuthController {
     }
 
     async googleRedirect(req: Request, res: Response) {
-        const { accessToken, refreshToken, sessionId } = req.user as any;
-        const state = req.query.state as string;
-        const redirectUrl = state || `${process.env.FRONTEND_URL}/dashboard`;
+        const profile = req.user;
+        const result = await this.service.loginWithGoogle(profile);
 
-        this.setCookies(res, { accessToken, refreshToken, sessionId });
+        const redirectUrl = req.cookies.oauth_redirect || "/";
+        res.clearCookie("oauth_redirect");
+
+        this.setCookies(res, result);
 
         return res.redirect(redirectUrl);
     }
 
     async me(req: Request, res: Response) {
-        const userId = (req as any).user?.id;
+        const userId = req.userId;
         if (!userId) {
             return res.status(401).json({ message: "Unauthorized" });
         }

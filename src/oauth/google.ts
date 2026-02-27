@@ -9,12 +9,11 @@ export function configureGoogle(authService: AuthService) {
             clientID: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
             callbackURL: process.env.GOOGLE_CALLBACK_URL!,
-            state: true
+            state: false
         },
         async (_accessToken, _refreshToken, profile, done) => {
             try {
-                const result = await authService.loginWithGoogle(profile);
-                done(null, result as any);
+                done(null, profile);
             } catch (err) {
                 done(err as Error);
             }
