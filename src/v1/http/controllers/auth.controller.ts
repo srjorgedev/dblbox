@@ -104,4 +104,14 @@ export class AuthController {
 
         return res.redirect(redirectUrl);
     }
+
+    async me(req: Request, res: Response) {
+        const userId = (req as any).user?.id;
+        if (!userId) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const user = await this.service.getUserData(userId);
+        return res.json(user);
+    }
 }

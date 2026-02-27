@@ -204,4 +204,17 @@ export class AuthService {
             password_hash: null
         });
     }
+
+    async getUserData(userId: string) {
+        const user = await this.userRepo.findByID(userId);
+        if (!user) throw new Error("User not found");
+
+        const accounts = await this.accountRepo.findByUserId(userId);
+        const providers = accounts.map(a => a?.provider);
+
+        return {
+            ...user,
+            providers
+        };
+    }
 }

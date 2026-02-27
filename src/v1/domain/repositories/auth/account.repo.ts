@@ -55,4 +55,18 @@ AND provider_account_id = ?
             ]
         });
     }
+
+    async findByUserId(userId: string): Promise<Types.Account[]> {
+        const r = await this.db.execute({
+            sql: `
+SELECT 
+	provider, provider_account_id, user_id, email, password_hash
+FROM account
+WHERE user_id = ?
+    `,
+            args: [userId]
+        });
+
+        return r.rows as unknown as Types.Account[];
+    }
 }

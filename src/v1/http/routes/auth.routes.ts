@@ -12,6 +12,8 @@ export function createAuthRoutes(controller: AuthController) {
     router.post("/logout", asyncHandler((req, res, next) => controller.logout(req, res)));
     router.post("/register", asyncHandler((req, res, next) => controller.register(req, res)));
 
+    router.get("/me", authMiddleware, asyncHandler((req, res, next) => controller.me(req, res)));
+
     router.get(
         "/google",
         (req, res, next) => {

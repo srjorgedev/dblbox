@@ -6,6 +6,7 @@ import Database from "./config/db";
 import { initModules } from "./init";
 import { globalErrorHandler } from "./middlewares/error.handler";
 
+import session from "express-session";
 import passport from "passport";
 import cookieParser from "cookie-parser";
 
@@ -22,13 +23,23 @@ async function main() {
 
     const server = e();
 
-    server.use(passport.initialize())
-
     server.set("trust proxy", 1);
 
     server.use(e.json());
     server.use(e.urlencoded({ extended: true }));
     server.use(cookieParser());
+    server.use(session({
+        secret: process.env.SESSION_SECRET || "keyboard cat", 
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            secure: process.env.NODE_ENV === "production",
+            httpOnly: true,
+            maxAge: 24 * 60 * 60 * 1000 
+        }
+    }));
+    server.use(passport.initialize())
+
     server.use(cors({
         origin: ["http://localhost:4321"],
         allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
