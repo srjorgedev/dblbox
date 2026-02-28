@@ -4,6 +4,7 @@ import { generateAccessToken } from "@/utils/jwt.util";
 
 import crypto from "crypto";
 import { now } from "@/utils/date.util";
+import { hashToken } from "@/utils/crypto.utils";
 
 export class AuthService {
     private readonly userRepo: UserRepo;
@@ -159,7 +160,7 @@ export class AuthService {
         const sessionId = crypto.randomUUID();
         const refreshToken = crypto.randomBytes(64).toString("hex");
 
-        const refreshHash = await hashPassword(refreshToken);
+        const refreshHash = hashToken(refreshToken);
 
         const now = Math.floor(Date.now() / 1000);
 
