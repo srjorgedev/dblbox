@@ -68,19 +68,22 @@ export class AuthController {
         res.cookie("accessToken", data.accessToken, {
             httpOnly: true,
             secure: true,
-            sameSite: "none"
+            sameSite: "none",
+            path: "/"
         });
 
         res.cookie("refreshToken", data.refreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            path: "/"
         });
 
         res.cookie("sessionId", data.sessionId, {
             httpOnly: true,
             secure: true,
             sameSite: "none",
+            path: "/"
         });
     }
 
