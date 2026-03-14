@@ -38,18 +38,24 @@ export class AuthService {
             throw new Error("Session expired");
         }
 
-        const valid = await comparePassword(
-            refreshToken,
-            String(session.refresh_token_hash)
-        );
+        const valid = hashToken(refreshToken) === String(session.refresh_token_hash);
 
         if (!valid) throw new Error("Invalid refresh token");
 
+        const user = await this.userRepo.findByID(session.user_id);
+        if (!user) throw new Error("User not found");
+
         const accessToken = generateAccessToken({
-            sub: session.user_id
+            sub: session.user_id,
+            role: user.role_id
         });
 
-        return { accessToken };
+        return { 
+            accessToken, 
+            refreshToken, 
+            sessionId,
+            userId: session.user_id 
+        };
     }
 
     async register(username: string, email: string, password: string) {
@@ -78,7 +84,7 @@ export class AuthService {
         });
 
         const refreshToken = crypto.randomBytes(64).toString("hex");
-        const refreshHash = await hashPassword(refreshToken);
+        const refreshHash = hashToken(refreshToken);
         const sessionId = crypto.randomUUID();
 
         await this.sessionRepo.create({
@@ -89,9 +95,11 @@ export class AuthService {
             expires_at: now() + 60 * 60 * 24 * 7
         });
 
+        const user = await this.userRepo.findByID(userId);
+
         const accessToken = generateAccessToken({
             sub: userId,
-            role: 1
+            role: user.role_id
         });
 
         return { accessToken, refreshToken, sessionId };
@@ -157,23 +165,27 @@ export class AuthService {
     }
 
     private async createSession(userId: string) {
+        const user = await this.userRepo.findByID(userId);
+        if (!user) throw new Error("User not found");
+
         const sessionId = crypto.randomUUID();
         const refreshToken = crypto.randomBytes(64).toString("hex");
 
         const refreshHash = hashToken(refreshToken);
 
-        const now = Math.floor(Date.now() / 1000);
+        const timestamp = now();
 
         await this.sessionRepo.create({
             id: sessionId,
             user_id: userId,
             refresh_token_hash: refreshHash,
-            created_at: now,
-            expires_at: now + 60 * 60 * 24 * 7
+            created_at: timestamp,
+            expires_at: timestamp + 60 * 60 * 24 * 7
         });
 
         const accessToken = generateAccessToken({
-            sub: userId
+            sub: userId,
+            role: user.role_id
         });
 
         return {

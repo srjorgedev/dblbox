@@ -53,8 +53,9 @@ export class CommentController {
         const id = (req.query.id as string) || null;
 
         const content = (req.body.content as string) || null;
-        const user = req.user?.id;
+        const user = req.userId;
 
+        if (!user) throw new AppError("Unauthorized", 401);
         if (!(COMMENTS_ARRAY as readonly string[]).includes(to) && to == "user") throw new AppError("error with destiny, doesn't exists", 404);
         if (content == null) throw new AppError("error with content", 404);
         if (to == null) throw new AppError("error with destiny", 404);
@@ -64,6 +65,8 @@ export class CommentController {
         if (content.trim().length > 1000) throw new AppError("error with content length", 404);
 
         await this.exist(to, String(id));
+
+        console.log({ to, id, user, content })
 
         let response;
         switch (to) {

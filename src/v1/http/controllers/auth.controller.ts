@@ -20,23 +20,30 @@ export class AuthController {
             return res.redirect(redirectUrl);
         }
 
-        return res.json({ ok: true });
+        const expiresAt = Date.now() + 15 * 60 * 1000;
+        return res.json({ ok: true, accessToken: result.accessToken, expiresAt });
     }
 
     async refresh(req: Request, res: Response) {
         try {
             const { refreshToken, sessionId } = req.cookies;
 
-            const { accessToken } =
-                await this.service.refresh(sessionId, refreshToken);
+            if (!refreshToken || !sessionId) throw new Error("No cookies");
 
-            return res.json({ accessToken });
+            const result = await this.service.refresh(sessionId, refreshToken);
 
-        } catch {
+            this.setCookies(res, result);
+            req.userId = result.userId;
+            req.userFromJwt = { id: result.userId };
+
+            const expiresAt = Date.now() + 15 * 60 * 1000;
+            return res.json({ ok: true, accessToken: result.accessToken, expiresAt });
+        } catch (err) {
+            console.error(err);
             return res.status(401).json({ message: "Invalid session" });
         }
     }
-
+    
     async logout(req: Request, res: Response) {
         const { sessionId } = req.cookies;
 
@@ -61,29 +68,41 @@ export class AuthController {
             return res.redirect(redirectUrl);
         }
 
-        return res.status(201).json({ ok: true });
+        const expiresAt = Date.now() + 15 * 60 * 1000;
+        return res.status(201).json({ ok: true, accessToken: result.accessToken, expiresAt });
     }
 
     private setCookies(res: Response, data: any) {
+        const isProd = process.env.NODE_ENV === 'production';
+        const sameSite = isProd ? "none" : "lax";
+
+        console.log("Setting cookies for user:", data.userId || "unknown");
+        console.log("AccessToken present:", !!data.accessToken);
+
+        const accessTokenExpires = new Date(Date.now() + 15 * 60 * 1000);
+
         res.cookie("accessToken", data.accessToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: "/"
+            secure: isProd,
+            sameSite: sameSite,
+            path: "/",
+            expires: accessTokenExpires
         });
 
         res.cookie("refreshToken", data.refreshToken, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: "/"
+            secure: isProd,
+            sameSite: sameSite,
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000 
         });
 
         res.cookie("sessionId", data.sessionId, {
             httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            path: "/"
+            secure: isProd,
+            sameSite: sameSite,
+            path: "/",
+            maxAge: 7 * 24 * 60 * 60 * 1000 
         });
     }
 
@@ -114,7 +133,7 @@ export class AuthController {
     async me(req: Request, res: Response) {
         const userId = req.userId;
         if (!userId) {
-            return res.status(401).json({ message: "Unauthorized" });
+            return res.status(401).json({ message: "Unauthorized no user id" });
         }
 
         const user = await this.service.getUserData(userId);

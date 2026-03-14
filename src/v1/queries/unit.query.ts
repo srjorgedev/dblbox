@@ -107,6 +107,7 @@ const ABILITIES_JSON_SELECT = (isZenkai: number) => `
         'content', COALESCE(
           json_group_array(
             json_object(
+              'state', a.state,
               'number', a.number,
               'zenkai', iif(a.zenkai = 1, json('true'), json('false')),
               'title', a.title,
@@ -120,7 +121,7 @@ const ABILITIES_JSON_SELECT = (isZenkai: number) => `
           json('[]')
         )
       )
-      FROM ability a
+      FROM unit_ability a
       LEFT JOIN ability_type_texts att
         ON att.ability_type = a.ability_type
        AND att.lang = ?

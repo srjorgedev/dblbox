@@ -37,6 +37,7 @@ export type AbilityJSON = {
 }
 
 export type AbilityContent = {
+    readonly state: number;
     readonly number: number;
     readonly zenkai: boolean;
     readonly title: null | string;

@@ -16,17 +16,13 @@ export function authMiddleware(
     if (!token) {
         token = req.cookies.accessToken;
     }
-    
-    console.log({token})
 
     if (!token) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ message: "Unauthorized no token" });
     }
 
     try {
         const payload = verifyToken(token);
-
-        console.log(payload)
 
         req.userId = payload.sub;
         req.userFromJwt = {
@@ -35,6 +31,6 @@ export function authMiddleware(
 
         next();
     } catch {
-        return res.status(401).json({ message: "Invalid token" });
+        return res.status(401).json({ message: "Token expired" });
     }
 }

@@ -36,8 +36,8 @@ async function main() {
     }));
 
     const dblBoxRouter = initModules(dblDB, cDB);
-    server.use("/api/v1/assets", e.static(path.join(process.cwd(), 'data', 'assets')));
-    server.use("/api/v1", dblBoxRouter);
+    server.use("/v1/assets", e.static(path.join(process.cwd(), 'data', 'assets')));
+    server.use("/v1", dblBoxRouter);
 
     server.use(globalErrorHandler);
 
